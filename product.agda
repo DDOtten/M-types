@@ -1,8 +1,8 @@
 {-# OPTIONS --without-K #-}
 
-module M-types.product where
-    open import Agda.Primitive
+open import Agda.Primitive
 
+module M-types.product where
     ∏ : {a b : Level} → (A : Set a) → (B : A → Set b) → Set (a ⊔ b)
     ∏ A B = (a : A) → B a
 
