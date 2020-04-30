@@ -25,6 +25,15 @@ module M-types.bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     FunBisim : Coalg → Ty (ℓ-suc ℓ)
     FunBisim C =
         ∑[ rel ∈ (ty C → ty C → Ty ℓ) ]
-        ∏[ c₁ ∈ ty C ]
-        ∏[ c₂ ∈ ty C ]
+        ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
         (rel c₁ c₂ → (Pbar rel) (obs C c₁) (obs C c₂))
+
+    rel : {C : Coalg} →
+        ∏[ ∼ ∈ FunBisim C ] (ty C → ty C → Ty ℓ)
+    rel {C} (rel , bisim) = rel
+
+    bisim : {C : Coalg} →
+        ∏[ ∼ ∈ FunBisim C ]
+        ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
+        (rel ∼ c₁ c₂ → (Pbar (rel ∼)) (obs C c₁) (obs C c₂))
+    bisim {C} (ty , bisim) = bisim
