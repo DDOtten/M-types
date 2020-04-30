@@ -1,11 +1,12 @@
 {-# OPTIONS --without-K #-}
 
-open import Agda.Primitive
+open import M-types.ty
 
 module M-types.product where
-    ∏ : {a b : Level} → (A : Set a) → (B : A → Set b) → Set (a ⊔ b)
-    ∏ A B = (a : A) → B a
+    ∏ : {ℓ₁ ℓ₂ : Level} →
+        (X : Ty ℓ₁) → (Y : X → Ty ℓ₂) → Ty (ℓ-max ℓ₁ ℓ₂)
+    ∏ X Y = (x : X) → Y x
 
     ∏-syntax = ∏
     infix 2 ∏-syntax
-    syntax ∏-syntax A (λ a → B) = ∏[ a ∈ A ] B
+    syntax ∏-syntax X (λ x → Y) = ∏[ x ∈ X ] Y

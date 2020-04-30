@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K #-}
 
-open import Agda.Primitive
+open import M-types.ty
 
 module M-types.sum where
     infixr 4 _,_
-    record ∑ {a b : Level} (X : Set a) (Y : X → Set b) : Set (a ⊔ b) where
+    record ∑ {ℓ₁ ℓ₂ : Level} (X : Ty ℓ₁) (Y : X → Ty ℓ₂) : Ty (ℓ-max ℓ₁ ℓ₂) where
         constructor _,_
         field
             pr₁ : X
@@ -18,5 +18,6 @@ module M-types.sum where
     syntax ∑-syntax X (λ x → Y) = ∑[ x ∈ X ] Y
 
     infixr 2 _×_
-    _×_ : {a b : Level} → (X : Set a) → (Y : Set b) → Set (a ⊔ b)
+    _×_ : {ℓ₁ ℓ₂ : Level} →
+        (X : Ty ℓ₁) → (Y : Ty ℓ₂) → Ty (ℓ-max ℓ₁ ℓ₂)
     X × Y = ∑[ x ∈ X ] Y
