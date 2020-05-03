@@ -30,7 +30,9 @@ module M-types.Rel where
 
     funToTy : {ℓ : Level} {X : Ty ℓ} →
         FunRel X → TyRel X
-    funToTy {ℓ} {X} ∼ = (
-        (∑[ x₁ ∈ X ] ∑[ x₂ ∈ X ] ∼ x₁ x₂) ,
-        (λ (x₁ , x₂ , s) → x₁) ,
-        (λ (x₁ , x₂ , s) → x₂))
+    funToTy {ℓ} {X} ∼ =
+        (
+            (∑[ x₁ ∈ X ] ∑[ x₂ ∈ X ] ∼ x₁ x₂) ,
+            pr₁ ,
+            pr₁ ∘ pr₂
+        )

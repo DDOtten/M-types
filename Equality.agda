@@ -10,10 +10,12 @@ module M-types.Equality where
         refl : {x : X} → x ≡ x
     open _≡_ public
 
-    sym : {ℓ : Level} {X : Ty ℓ} {x₁ x₂ : X} →
+    infix 10 _⁻¹
+    _⁻¹ : {ℓ : Level} {X : Ty ℓ} {x₁ x₂ : X} →
         x₁ ≡ x₂ → x₂ ≡ x₁
-    sym refl = refl
+    refl ⁻¹ = refl
 
-    trans : {ℓ : Level} {X : Ty ℓ} {x₁ x₂ x₃ : X} →
+    infixr 9 _·_
+    _·_ : {ℓ : Level} {X : Ty ℓ} {x₁ x₂ x₃ : X} →
         x₁ ≡ x₂ → x₂ ≡ x₃ → x₁ ≡ x₃
-    trans refl refl = refl
+    refl · refl = refl

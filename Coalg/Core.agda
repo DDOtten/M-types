@@ -15,10 +15,10 @@ module M-types.Coalg.Core {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
 
     Pbar : {X : Ty ℓ} →
         FunRel X → FunRel (P X)
-    Pbar {X} ∼ (a₁ , d₁) (a₂ , d₂) =
-        ∏[ p ∈ (a₁ ≡ a₂) ]
-        ∏[ b₁ ∈ B a₁ ]
-        ∼ (d₁ b₁) (d₂ (tra B p b₁))
+    Pbar {X} ∼ x₁′ x₂′ =
+        ∑[ p ∈ pr₁ x₁′ ≡ pr₁ x₂′ ]
+        ∏[ b₁ ∈ B (pr₁ x₁′) ]
+        (∼ (pr₂ x₁′ b₁) (pr₂ x₂′ (tra B p b₁)))
 
 
     Coalg : Ty (ℓ-suc ℓ)
