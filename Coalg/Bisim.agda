@@ -45,6 +45,10 @@ module M-types.Coalg.Bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
         tra (λ a → (B a → X)) p (f₂ ∘ (tra B p)) ≡ f₂
     funtra refl f₂ = refl
 
+    funtra' : {a₁ a₂ : A} {X : Ty ℓ} →
+        ∏[ p ∈ a₁ ≡ a₂ ] ∏[ f₁ ∈ (B a₂ → X) ]
+        tra (λ a → (B a → X)) (p ⁻¹) f₁ ≡ f₁ ∘ (tra B p)
+    funtra' refl f₁ = refl
 
     tyToFun : {C : Coalg} →
         TyBisim C → FunBisim C
@@ -53,20 +57,36 @@ module M-types.Coalg.Bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
             (λ c₁ → λ c₂ → ∑[ s ∈ (ty (coalg {C} ∼)) ]
                 ((fun (ρ₁ {C} ∼) s ≡ c₁) × (fun (ρ₂ {C} ∼) s ≡ c₂))
             ) ,
-            (λ c₁ → λ c₂ → λ (s , p₁ , p₂) → (
-                (ap (pr₁) (ap (obs C) (p₁ ⁻¹) · com {coalg {C} ∼} {C} (ρ₁ {C} ∼) s)) ·
-                (ap (pr₁) (ap (obs C) (p₂ ⁻¹) · com {coalg {C} ∼} {C} (ρ₂ {C} ∼) s))⁻¹ ,
-                (λ b₁ → (
-                    pr₂ (obs (coalg {C} ∼) s) (tra
-                        B
-                        (ap (pr₁) (ap (obs C) (p₁ ⁻¹) · com {coalg {C} ∼} {C} (ρ₁ {C} ∼) s))
-                        b₁
-                    ),
-                    ≡-apply {!   !} b₁ ,
-                    {!   !}
-                ))
-            ))
-        )
+            (λ c₁ → λ c₂ → λ (s , p₁ , p₂) →
+                let
+                    q₁ = begin
+                            obs C c₁
+                        ≡⟨ ap (obs C) (p₁ ⁻¹) ⟩
+                            obs C (fun (ρ₁ {C} ∼) s)
+                        ≡⟨ com {coalg {C} ∼} {C} (ρ₁ {C} ∼) s ⟩
+                            (pr₁ (obs (coalg {C} ∼) s) , fun (ρ₁ {C} ∼) ∘ pr₂ (obs (coalg {C} ∼) s))
+                        ∎
+                    q₂ = begin
+                            obs C c₂
+                        ≡⟨ ap (obs C) (p₂ ⁻¹) ⟩
+                            obs C (fun (ρ₂ {C} ∼) s)
+                        ≡⟨ com {coalg {C} ∼} {C} (ρ₂ {C} ∼) s ⟩
+                            (pr₁ (obs (coalg {C} ∼) s) , fun (ρ₂ {C} ∼) ∘ pr₂ (obs (coalg {C} ∼) s))
+                        ∎
+                in
+                    (ap pr₁ q₁) · ((ap pr₁ q₂)⁻¹) ,
+                    (λ b₁ → (
+                        pr₂ (obs (coalg {C} ∼) s) (tra B (ap pr₁ q₁) b₁),
+                        (r₁ q₁ b₁)⁻¹ ,
+                        (r₁ (q₂ ⁻¹) (tra B (ap pr₁ q₁) b₁)) ·
+                        ap (pr₂ (obs C c₂)) (≡-apply (tracon {ℓ} {ℓ} {A} {B} (ap pr₁ q₁) (ap pr₁ (q₂ ⁻¹)) · (ap (λ r → tra B (ap pr₁ q₁ · r)) ((apInv pr₁ q₂)⁻¹))) b₁)
+                    ))
+            )
+        ) where
+            r₁ : {pc₁ pc₂ : P (ty C)} →
+                ∏[ p ∈ (pc₁ ≡ pc₂) ] ∏[ b₁ ∈ B (pr₁ pc₁) ] (pr₂ pc₁ b₁ ≡ pr₂ pc₂ (tra B (ap pr₁ p) b₁))
+            r₁ refl b = refl
+
 
 
     funToTy : {C : Coalg} →
