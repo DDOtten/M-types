@@ -52,9 +52,9 @@ module M-types.Base where
         ∏[ f ∈ (∏ X Y) ] ∏[ p ∈ x₁ ≡ x₂ ] tra Y p (f x₁) ≡ f x₂
     apd f refl = refl
 
-    tracon : {ℓ₁ ℓ₂ : Level} {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {x₁ x₂ x₃ : X} →
+    traCon : {ℓ₁ ℓ₂ : Level} {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {x₁ x₂ x₃ : X} →
         ∏[ p₁ ∈ x₁ ≡ x₂ ] ∏[ p₂ ∈ x₂ ≡ x₃ ] ((tra Y p₂) ∘ (tra Y p₁) ≡ (tra Y (p₁ · p₂)))
-    tracon refl refl = refl
+    traCon refl refl = refl
 
 
     ≡-pair : {ℓ₁ ℓ₂ : Level} {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {w₁ w₂ : ∑ X Y} →
