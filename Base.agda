@@ -5,7 +5,8 @@ module M-types.Base where
     open import M-types.Ty public
     open import M-types.Equality public
     open import M-types.Sum public
-    open import M-types.Product public
+    open import M-types.Prod public
+    open import M-types.Equivalence public
 
 
     id : {ℓ : Level} {X : Ty ℓ} →
