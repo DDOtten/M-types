@@ -4,6 +4,7 @@
 open import M-types.Base
 import M-types.Rel
 
+
 module M-types.Coalg.Bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     open import M-types.Coalg.Core A B
 
@@ -26,10 +27,10 @@ module M-types.Coalg.Bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     ρ₂ : {C : Coalg} → ∏[ ∼ ∈ TyBisim C ] Mor (coalg {C} ∼) C
     ρ₂ {C} (coalg , ρ₁ , ρ₂) = ρ₂
 
-    _⟨_⟩_ : {C : Coalg} →
-        ∏[ c₁ ∈ ty C ] ∏[ ∼ ∈ TyBisim C ] ∏[ c₂ ∈ ty C ] Ty ℓ
-    _⟨_⟩_ {C} c₁ ∼ c₂ = ∑[ s ∈ ty (coalg {C} ∼) ]
-        ((fun (ρ₁ {C} ∼) s ≡ c₁) × (fun (ρ₂ {C} ∼) s ≡ c₂))
+    TyBisim-syntax :
+        ∏[ C ∈ Coalg ] ∏[ ∼ ∈ TyBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ] Ty ℓ
+    TyBisim-syntax C ∼ c₁ c₂ = M-types.Rel.TyRel-syntax (ty C) (tyRel {C} ∼) c₁ c₂
+    syntax TyBisim-syntax C ∼ c₁ c₂ = c₁ ⟨ C / ∼ ⟩ c₂
 
 
     FunBisim : Coalg → Ty (ℓ-suc ℓ)
@@ -48,16 +49,17 @@ module M-types.Coalg.Bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
         (funRel ∼ c₁ c₂ → (Pbar (funRel ∼)) (obs C c₁) (obs C c₂))
     bisim (funRel , bisim) = bisim
 
-    _[_]_ : {C : Coalg} →
-        ∏[ c₁ ∈ ty C ] ∏[ ∼ ∈ FunBisim C ] ∏[ c₂ ∈ ty C ] Ty ℓ
-    c₁ [ ∼ ] c₂ = funRel ∼ c₁ c₂
+    FunBisim-syntax :
+        ∏[ C ∈ Coalg ] ∏[ ∼ ∈ FunBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ] Ty ℓ
+    FunBisim-syntax C ∼ c₁ c₂ = M-types.Rel.FunRel-syntax (ty C) (funRel ∼) c₁ c₂
+    syntax FunBisim-syntax C ∼ c₁ c₂ = c₁ [ C / ∼ ] c₂
 
 
     tyToFun : {C : Coalg} →
         TyBisim C → FunBisim C
     tyToFun {C} ∼ =
         (
-            (λ c₁ → λ c₂ → _⟨_⟩_ {C} c₁ ∼ c₂) ,
+            (λ c₁ → λ c₂ → c₁ ⟨ C / ∼ ⟩ c₂) ,
             (λ c₁ → λ c₂ → λ (s , p₁ , p₂) →
                 let
                     q₁ = begin
@@ -103,7 +105,7 @@ module M-types.Coalg.Bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     funToTy {C} ∼ =
         (
             (
-                (∑[ c₁ ∈ ty C ] ∑[ c₂ ∈ ty C ] c₁ [ ∼ ] c₂) ,
+                (∑[ c₁ ∈ ty C ] ∑[ c₂ ∈ ty C ] c₁ [ C / ∼ ] c₂) ,
                 (λ (c₁ , c₂ , s) → (
                     pr₁ (obs C c₁) ,
                     λ b₁ → (
@@ -135,9 +137,11 @@ module M-types.Coalg.Bisim {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
 
 
     tyToFunPres : {C : Coalg} →
-        ∏[ ∼ ∈ TyBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ] (c₁ [ tyToFun {C} ∼ ] c₂) ≡ (_⟨_⟩_ {C} c₁ ∼ c₂)
+        ∏[ ∼ ∈ TyBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
+        (c₁ [ C / tyToFun {C} ∼ ] c₂) ≡ (c₁ ⟨ C / ∼ ⟩ c₂)
     tyToFunPres {C} ∼ c₁ c₂ = M-types.Rel.tyToFunPres (tyRel {C} ∼) c₁ c₂
 
     funToTyPres : {C : Coalg} →
-        ∏[ ∼ ∈ FunBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ] (_⟨_⟩_ {C} c₁ (funToTy {C} ∼) c₂) ≃ (c₁ [ ∼ ] c₂)
+        ∏[ ∼ ∈ FunBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
+        (c₁ ⟨ C / funToTy {C} ∼ ⟩ c₂) ≃ (c₁ [ C / ∼ ] c₂)
     funToTyPres ∼ c₁ c₂ = M-types.Rel.funToTyPres (funRel ∼) c₁ c₂

@@ -9,5 +9,6 @@ module M-types.Ty where
             _⊔_ to ℓ-max
         )
 
+
     Ty : (ℓ : Level) → Set (ℓ-suc ℓ)
     Ty ℓ = Set ℓ

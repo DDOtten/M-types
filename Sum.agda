@@ -19,6 +19,7 @@ module M-types.Sum where
     infix 2 ∑-syntax
     syntax ∑-syntax X (λ x → Y) = ∑[ x ∈ X ] Y
 
+
     infixr 2 _×_
     _×_ : {ℓ₁ ℓ₂ : Level} →
         (X : Ty ℓ₁) → (Y : Ty ℓ₂) → Ty (ℓ-max ℓ₁ ℓ₂)

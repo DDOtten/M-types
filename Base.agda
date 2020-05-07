@@ -63,8 +63,12 @@ module M-types.Base where
     ≡-pair (refl , refl) = refl
 
     ≡-apply : {ℓ₁ ℓ₂ : Level} {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {f₁ f₂ : ∏ X Y} →
-        (f₁ ≡ f₂) → ∏[ x ∈ X ] (f₁ x ≡ f₂ x)
+        (f₁ ≡ f₂) → (∏[ x ∈ X ] (f₁ x ≡ f₂ x))
     ≡-apply refl = λ x → refl
+
+    postulate
+        funext : {ℓ₁ ℓ₂ : Level} {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {f₁ f₂ : ∏ X Y} →
+            (∏[ x ∈ X ] (f₁ x ≡ f₂ x)) → f₁ ≡ f₂
 
 
     ty = pr₁

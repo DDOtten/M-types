@@ -8,6 +8,7 @@ open import M-types.Prod
 
 
 module M-types.Equivalence where
+    infix 8 _≃_
     _≃_ : {ℓ₁ ℓ₂ : Level} →
         ∏[ X ∈ Ty ℓ₁ ] ∏[ Y ∈ Ty ℓ₂ ] Ty (ℓ-max ℓ₁ ℓ₂)
     X ≃ Y = ∑[ f ∈ (X → Y) ]
