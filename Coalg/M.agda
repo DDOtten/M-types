@@ -34,3 +34,26 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
         ∑[ M ∈ Coalg ] ∏[ C ∈ Coalg ]
         ∑[ coiter ∈ Mor C M ] ∏[ ∼ ∈ FunBisim M ]
         ∏[ m₁ ∈ ty M ] ∏[ m₂ ∈ ty M ] (m₁ [ M / ∼ ] m₂ → m₁ ≡ m₂)
+
+
+    cohCoalgToTyBisimCoalg : CohCoalg → TyBisimCoalg
+    cohCoalgToTyBisimCoalg (M , isCohCoalg) =
+        (
+            M ,
+            λ C → (
+                pr₁ (isCohCoalg C) ,
+                λ ∼ → λ m₁ → λ m₂ → λ (s , p₁ , p₂) →
+                    p₁ ⁻¹ · pr₁ (pr₂ (isCohCoalg (coalg {M} ∼)) (ρ₁ {M} ∼) (ρ₂ {M} ∼)) s · p₂
+            )
+        )
+
+    tyBisimCoalgToFunBisimCoalg : TyBisimCoalg → FunBisimCoalg
+    tyBisimCoalgToFunBisimCoalg (M , isTyBisimCoalg) =
+        (
+            M ,
+            λ C → (
+                pr₁ (isTyBisimCoalg C) ,
+                λ ∼ → λ m₁ → λ m₂ →
+                    pr₂ (isTyBisimCoalg C) (funToTy {M} ∼) m₁ m₂ ∘ inv (funToTyPres {M} ∼ m₁ m₂)
+            )
+        )

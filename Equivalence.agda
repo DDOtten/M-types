@@ -14,3 +14,7 @@ module M-types.Equivalence where
     X ≃ Y = ∑[ f ∈ (X → Y) ]
         (∑[ f⁻¹ ∈ (Y → X) ] ∏[ x ∈ X ] f⁻¹ (f x) ≡ x) ×
         (∑[ f⁻¹ ∈ (Y → X) ] ∏[ y ∈ Y ] f (f⁻¹ y) ≡ y)
+
+    inv : {ℓ₁ ℓ₂ : Level} {X : Ty ℓ₁} {Y : Ty ℓ₂} →
+        (X ≃ Y) → (Y → X)
+    inv (_ , (inv , _) , (_ , _)) = inv
