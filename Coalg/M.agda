@@ -25,6 +25,12 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
 
     TyBisimCoalg : Ty (ℓ-suc ℓ)
     TyBisimCoalg =
-        ∑[ M ∈ Coalg ]
-        (∏[ C ∈ Coalg ] Mor C M) ×
-        (∏[ ∼ ∈ TyBisim M ] ∏[ m₁ ∈ ty M ] ∏[ m₂ ∈ ty M ] (m₁ ⟨ ∼ ⟩ m₂ → m₁ ≡ m₂) )
+        ∑[ M ∈ Coalg ] ∏[ C ∈ Coalg ]
+        ∑[ coiter ∈ Mor C M ] ∏[ ∼ ∈ TyBisim M ]
+        ∏[ m₁ ∈ ty M ] ∏[ m₂ ∈ ty M ] (m₁ ⟨ M / ∼ ⟩ m₂ → m₁ ≡ m₂)
+
+    FunBisimCoalg : Ty (ℓ-suc ℓ)
+    FunBisimCoalg =
+        ∑[ M ∈ Coalg ] ∏[ C ∈ Coalg ]
+        ∑[ coiter ∈ Mor C M ] ∏[ ∼ ∈ FunBisim M ]
+        ∏[ m₁ ∈ ty M ] ∏[ m₂ ∈ ty M ] (m₁ [ M / ∼ ] m₂ → m₁ ≡ m₂)
