@@ -11,31 +11,31 @@ module M-types.Coalg.Core {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
 
     Pfun : {X Y : Ty ℓ} →
         (X → Y) → (P X → P Y)
-    Pfun f px = (pr₁ px , f ∘ pr₂ px )
+    Pfun f (a , d) = (a , f ∘ d)
 
     Pbar : {X : Ty ℓ} →
         FunRel X → FunRel (P X)
-    Pbar {X} ∼ px₁ px₂ =
-        ∑[ p ∈ pr₁ px₁ ≡ pr₁ px₂ ]
-        ∏[ b₁ ∈ B (pr₁ px₁) ]
-        (∼ (pr₂ px₁ b₁) (pr₂ px₂ (tra B p b₁)))
+    Pbar {X} ∼ (a₁ , d₁) (a₂ , d₂) =
+        ∑[ p ∈ a₁ ≡ a₂ ]
+        ∏[ b₁ ∈ B a₁ ]
+        (∼ (d₁ b₁) (d₂ (tra B p b₁)))
 
 
     Coalg : Ty (ℓ-suc ℓ)
     Coalg = ∑[ ty ∈ Ty ℓ ] (ty → P ty)
 
     obs : ∏[ C ∈ Coalg ] (ty C → P (ty C))
-    obs (ty , obs) = obs
+    obs (_ , obs) = obs
 
 
     Mor : (C D : Coalg) → Ty ℓ
     Mor C D =
         ∑[ fun ∈ (ty C → ty D) ]
         ∏[ c ∈ ty C ]
-        (obs D (fun c) ≡ Pfun fun (obs C c))
+        obs D (fun c) ≡ Pfun fun (obs C c)
 
     com : {C D : Coalg} →
         ∏[ f ∈ (Mor C D) ]
         ∏[ c ∈ ty C ]
         obs D (fun f c) ≡ Pfun (fun f) (obs C c)
-    com (fun , com) = com
+    com (_ , com) = com
