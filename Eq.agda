@@ -8,32 +8,32 @@ open import M-types.Prod
 
 module M-types.Eq where
     infix 4 _≡_
-    data _≡_ {X : Ty ℓ₁} : X → X → Ty ℓ₁ where
+    data _≡_ {X : Ty ℓ} : X → X → Ty ℓ where
         refl : {x : X} → x ≡ x
     open _≡_ public
 
     infix 10 _⁻¹
-    _⁻¹ : {X : Ty ℓ₁} {x₁ x₂ : X} →
+    _⁻¹ : {X : Ty ℓ} {x₁ x₂ : X} →
         x₁ ≡ x₂ → x₂ ≡ x₁
     refl ⁻¹ = refl
 
     infixr 9 _·_
-    _·_ : {X : Ty ℓ₁} {x₁ x₂ x₃ : X} →
+    _·_ : {X : Ty ℓ} {x₁ x₂ x₃ : X} →
         x₁ ≡ x₂ → x₂ ≡ x₃ → x₁ ≡ x₃
     refl · refl = refl
 
 
-    ·-neutr₁ : {X : Ty ℓ₁} {x₁ x₂ : X} →
+    ·-neutr₁ : {X : Ty ℓ} {x₁ x₂ : X} →
         ∏[ p ∈ x₁ ≡ x₂ ] refl · p ≡ p
     ·-neutr₁ refl = refl
 
-    ·-neutr₂ : {X : Ty ℓ₁} {x₁ x₂ : X} →
+    ·-neutr₂ : {X : Ty ℓ} {x₁ x₂ : X} →
         ∏[ p ∈ x₁ ≡ x₂ ] p · refl ≡ p
     ·-neutr₂ refl = refl
 
 
     infix 1 begin_
-    begin_ : {X : Ty ℓ₁} {x₁ x₂ : X} →
+    begin_ : {X : Ty ℓ} {x₁ x₂ : X} →
         (x₁ ≡ x₂) → (x₁ ≡ x₂)
     begin p = p
 
@@ -43,12 +43,12 @@ module M-types.Eq where
     x₁ ≡⟨ p₁ ⟩ p₂ = p₁ · p₂
 
     infix 3 _∎
-    _∎ : {X : Ty ℓ₁} →
+    _∎ : {X : Ty ℓ} →
         ∏[ x ∈ X ] x ≡ x
     x ∎ = refl
 
 
-    tra : {X : Ty ℓ₁} {x₁ x₂ : X} →
+    tra : {X : Ty ℓ} {x₁ x₂ : X} →
         ∏[ Y ∈ (X → Ty ℓ₂) ] (x₁ ≡ x₂ → (Y x₁ → Y x₂))
     tra f refl = id
 

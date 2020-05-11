@@ -5,7 +5,7 @@ open import M-types.Base
 open import M-types.Rel
 
 
-module M-types.Coalg.Core {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
+module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
     P : Ty ℓ → Ty ℓ
     P X = ∑[ a ∈ A ] (B a → X)
 

@@ -15,7 +15,7 @@ module M-types.Prod where
     syntax ∏-syntax X (λ x → Y) = ∏[ x ∈ X ] Y
 
 
-    id : {X : Ty ℓ₁} →
+    id : {X : Ty ℓ} →
         (X → X)
     id = λ x → x
 
