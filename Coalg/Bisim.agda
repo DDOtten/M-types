@@ -29,7 +29,8 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
 
     TyBisim-syntax :
         ∏[ C ∈ Coalg ] ∏[ ∼ ∈ TyBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ] Ty ℓ
-    TyBisim-syntax C ∼ c₁ c₂ = M-types.Rel.TyRel-syntax (ty C) (tyRel {C} ∼) c₁ c₂
+    TyBisim-syntax C ∼ c₁ c₂ =
+        M-types.Rel.TyRel-syntax (ty C) (tyRel {C} ∼) c₁ c₂
     syntax TyBisim-syntax C ∼ c₁ c₂ = c₁ ⟨ C / ∼ ⟩ c₂
 
 
@@ -51,7 +52,8 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
 
     FunBisim-syntax :
         ∏[ C ∈ Coalg ] ∏[ ∼ ∈ FunBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ] Ty ℓ
-    FunBisim-syntax C ∼ c₁ c₂ = M-types.Rel.FunRel-syntax (ty C) (funRel ∼) c₁ c₂
+    FunBisim-syntax C ∼ c₁ c₂ =
+        M-types.Rel.FunRel-syntax (ty C) (funRel ∼) c₁ c₂
     syntax FunBisim-syntax C ∼ c₁ c₂ = c₁ [ C / ∼ ] c₂
 
 

@@ -31,11 +31,9 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
     Mor : (C D : Coalg) → Ty ℓ
     Mor C D =
         ∑[ fun ∈ (ty C → ty D) ]
-        ∏[ c ∈ ty C ]
-        obs D (fun c) ≡ Pfun fun (obs C c)
+        ∏[ c ∈ ty C ] obs D (fun c) ≡ Pfun fun (obs C c)
 
     com : {C D : Coalg} →
         ∏[ f ∈ (Mor C D) ]
-        ∏[ c ∈ ty C ]
-        obs D (fun f c) ≡ Pfun (fun f) (obs C c)
+        ∏[ c ∈ ty C ] obs D (fun f c) ≡ Pfun (fun f) (obs C c)
     com (_ , com) = com
