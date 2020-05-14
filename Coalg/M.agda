@@ -23,7 +23,7 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     IsCohCoalg M coiter =
         ∏[ C ∈ Coalg ] ∏[ f₁ ∈ Mor C M ] ∏[ f₂ ∈ Mor C M ]
         ∑[ p ∈ fun f₁ ≡ fun f₂ ] ∏[ c ∈ ty C ]
-        ap (obs M) (≡-apply p c) · (com {C} {M} f₂ c) ≡
+        ap (obs M) (≡-apply p c) · com {C} {M} f₂ c ≡
         com {C} {M} f₁ c · ap (λ f → Pfun f (obs C c)) p
 
     CohCoalg : Ty (ℓ-suc ℓ)
@@ -61,7 +61,7 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
             fin : {C : Coalg} {f : Mor C M} →
                 (
                     ∑[ p ∈ fun f ≡ fun (coiter C) ] ∏[ c ∈ ty C ]
-                    ap (obs M) (≡-apply p c) · (com {C} {M} (coiter C) c) ≡
+                    ap (obs M) (≡-apply p c) · com {C} {M} (coiter C) c ≡
                     com {C} {M} f c · ap (λ f → Pfun f (obs C c)) p
                 ) → (f ≡ coiter C)
             fin {C} {f} (refl , coh) =
@@ -82,10 +82,10 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
             coh : {C : Coalg} {f₁ f₂ : Mor C M} →
                 (f₁ ≡ f₂) → (
                     ∑[ p ∈ fun f₁ ≡ fun f₂ ] ∏[ c ∈ ty C ]
-                    ap (obs M) (≡-apply p c) · (com {C} {M} f₂ c) ≡
+                    ap (obs M) (≡-apply p c) · com {C} {M} f₂ c ≡
                     com {C} {M} f₁ c · ap (λ f → Pfun f (obs C c)) p
                 )
-            coh {C} {f} refl =
+            coh {C} {f} {f} refl =
                 (
                     refl ,
                     λ c →
