@@ -93,6 +93,16 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
                         ·-neutr₂ (com {C} {M} f c)⁻¹
                 )
 
+    Fin→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
+        IsFinCoalg M coiter → IsTyBisimCoalg M coiter
+    Fin→TyBisim {M} {coiter} isFinCoalg = λ ∼ → λ m₁ → λ m₂ → λ (s , p₁ , p₂) →
+        p₁ ⁻¹ ·
+        ≡-apply (ap pr₁ (
+            isFinCoalg (coalg {M} ∼) (ρ₁ {M} ∼) ·
+            isFinCoalg (coalg {M} ∼) (ρ₂ {M} ∼)⁻¹
+        )) s ·
+        p₂
+
     Coh→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
         IsCohCoalg M coiter → IsTyBisimCoalg M coiter
     Coh→TyBisim {M} {coiter} isCohCoalg = λ ∼ → λ m₁ → λ m₂ → λ (s , p₁ , p₂) →
