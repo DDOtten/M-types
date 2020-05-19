@@ -11,5 +11,9 @@ module M-types.Base where
 
 
     postulate
-        funext : {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {f₁ f₂ : ∏ X Y} →
-            IsEqui {_} {_} {f₁ ≡ f₂} {∏[ x ∈ X ] (f₁ x ≡ f₂ x)} (≡-apply)
+        funext-axiom : {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {f₁ f₂ : ∏ X Y} →
+            IsEqui {_} {_} {f₁ ≡ f₂} {∏[ x ∈ X ] f₁ x ≡ f₂ x} (≡-apply)
+
+    funext :  {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {f₁ f₂ : ∏ X Y} →
+        (∏[ x ∈ X ] f₁ x ≡ f₂ x) → f₁ ≡ f₂
+    funext = inv (≡-apply , funext-axiom)

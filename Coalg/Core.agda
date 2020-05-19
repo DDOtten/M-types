@@ -49,5 +49,5 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
     P-mor {C} {D} f =
         (
             P-fun (fun f) ,
-            ≡-apply (ap P-fun (inv (≡-apply , funext) (com {C} {D} f)))
+            ≡-apply (ap P-fun (funext (com {C} {D} f)))
         )

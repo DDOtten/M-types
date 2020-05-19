@@ -24,7 +24,7 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
         ∏[ C ∈ Coalg ] ∏[ f₁ ∈ Mor C M ] ∏[ f₂ ∈ Mor C M ]
         ∑[ p ∈ fun f₁ ≡ fun f₂ ] ∏[ c ∈ ty C ]
         ap (λ f → obs M (f c)) p · com {C} {M} f₂ c ≡
-        com {C} {M} f₁ c · ap (λ f → Pfun f (obs C c)) p
+        com {C} {M} f₁ c · ap (λ f → P-fun f (obs C c)) p
 
     CohCoalg : Ty (ℓ-suc ℓ)
     CohCoalg = ∑[ M ∈ Coalg ] ∑[ coiter ∈ (∏[ C ∈ Coalg ] Mor C M) ]
@@ -35,7 +35,7 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
         Ty (ℓ-suc ℓ)
     IsTyBisimCoalg M coiter =
         ∏[ ∼ ∈ TyBisim M ] ∏[ m₁ ∈ ty M ] ∏[ m₂ ∈ ty M ]
-        (m₁ ⟨ M / ∼ ⟩ m₂ → IsContr(m₁ ≡ m₂))
+        (m₁ ⟨ M / ∼ ⟩ m₂ → m₁ ≡ m₂)
 
     TyBisimCoalg : Ty (ℓ-suc ℓ)
     TyBisimCoalg = ∑[ M ∈ Coalg ] ∑[ coiter ∈ (∏[ C ∈ Coalg ] Mor C M) ]
@@ -62,12 +62,12 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
                 (
                     ∑[ p ∈ fun f ≡ fun (coiter C) ] ∏[ c ∈ ty C ]
                     ap (λ f → obs M (f c)) p · com {C} {M} (coiter C) c ≡
-                    com {C} {M} f c · ap (λ f → Pfun f (obs C c)) p
+                    com {C} {M} f c · ap (λ f → P-fun f (obs C c)) p
                 ) → (f ≡ coiter C)
             fin {C} {f} (refl , coh) =
                 ≡-pair (
                     refl ,
-                    inv (≡-apply , funext) (λ c →
+                    funext (λ c →
                         (·-neutr₂ (com {C} {M} f c))⁻¹ ·
                         (coh c)⁻¹ ·
                         (·-neutr₁ (com {C} {M} (coiter C) c))
@@ -83,7 +83,7 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
                 (f₁ ≡ f₂) → (
                     ∑[ p ∈ fun f₁ ≡ fun f₂ ] ∏[ c ∈ ty C ]
                     ap (λ f → obs M (f c)) p · com {C} {M} f₂ c ≡
-                    com {C} {M} f₁ c · ap (λ f → Pfun f (obs C c)) p
+                    com {C} {M} f₁ c · ap (λ f → P-fun f (obs C c)) p
                 )
             coh {C} {f} {f} refl =
                 (
@@ -96,44 +96,41 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     Fin→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
         IsFinCoalg M coiter → IsTyBisimCoalg M coiter
     Fin→TyBisim {M} {coiter} isFinCoalg = λ ∼ → λ m₁ → λ m₂ → λ (s , p₁ , p₂) →
+        p₁ ⁻¹ ·
+        ≡-apply (ap pr₁ (
+            isFinCoalg (coalg {M} ∼) (ρ₁ {M} ∼) ·
+            isFinCoalg (coalg {M} ∼) (ρ₂ {M} ∼)⁻¹
+        )) s ·
+        p₂
+
+
+    Coh→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
+        IsCohCoalg M coiter → IsTyBisimCoalg M coiter
+    Coh→TyBisim {M} {coiter} isCohCoalg = λ ∼ → λ m₁ → λ m₂ → λ (s , p₁ , p₂) →
+        p₁ ⁻¹ ·
+        ≡-apply (pr₁ (isCohCoalg (coalg {M} ∼) (ρ₁ {M} ∼) (ρ₂ {M} ∼))) s ·
+        p₂
+
+    TyBisim→Coh : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
+        IsTyBisimCoalg M coiter → IsCohCoalg M coiter
+    TyBisim→Coh {M} {coiter} isTyBisimCoalg = λ C → λ f₁ → λ f₂ →
         (
-            p₁ ⁻¹ ·
-            ≡-apply (ap pr₁ (
-                isFinCoalg (coalg {M} ∼) (ρ₁ {M} ∼) ·
-                isFinCoalg (coalg {M} ∼) (ρ₂ {M} ∼)⁻¹
-            )) s ·
-            p₂ ,
+            funext (λ c →
+                isTyBisimCoalg
+                    (C , f₁ , f₂)
+                    (fun f₁ c)
+                    (fun f₂ c)
+                    (c , refl , refl)
+            ) ,
             {!   !}
         )
 
+    TyBisim→FunBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
+        IsTyBisimCoalg M coiter → IsFunBisimCoalg M coiter
+    TyBisim→FunBisim {M} {coiter} isTyBisimCoalg = λ ∼ → λ m₁ → λ m₂ →
+        isTyBisimCoalg (Fun→Ty {M} ∼) m₁ m₂ ∘ inv (Fun→Ty-pres {M} ∼ m₁ m₂)
 
-    -- Coh→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
-    --     IsCohCoalg M coiter → IsTyBisimCoalg M coiter
-    -- Coh→TyBisim {M} {coiter} isCohCoalg = λ ∼ → λ m₁ → λ m₂ → λ (s , p₁ , p₂) →
-    --     p₁ ⁻¹ ·
-    --     ≡-apply (pr₁ (isCohCoalg (coalg {M} ∼) (ρ₁ {M} ∼) (ρ₂ {M} ∼))) s ·
-    --     p₂
-
-    -- TyBisim→Coh : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
-    --     IsTyBisimCoalg M coiter → IsCohCoalg M coiter
-    -- TyBisim→Coh {M} {coiter} isTyBisimCoalg = λ C → λ f₁ → λ f₂ →
-    --     (
-    --         inv (≡-apply , funext) (λ c →
-    --             isTyBisimCoalg
-    --                 (C , f₁ , f₂)
-    --                 (fun f₁ c)
-    --                 (fun f₂ c)
-    --                 (c , refl , refl)
-    --         ) ,
-    --         {!   !}
-    --     )
-    --
-    -- TyBisim→FunBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
-    --     IsTyBisimCoalg M coiter → IsFunBisimCoalg M coiter
-    -- TyBisim→FunBisim {M} {coiter} isTyBisimCoalg = λ ∼ → λ m₁ → λ m₂ →
-    --     isTyBisimCoalg (Fun→Ty {M} ∼) m₁ m₂ ∘ inv (Fun→Ty-pres {M} ∼ m₁ m₂)
-    --
-    -- FunBisim→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
-    --     IsFunBisimCoalg M coiter → IsTyBisimCoalg M coiter
-    -- FunBisim→TyBisim {M} {coiter} isFunBisimCoalg = λ ∼ → λ m₁ → λ m₂ →
-    --     isFunBisimCoalg (Ty→Fun {M} ∼) m₁ m₂
+    FunBisim→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
+        IsFunBisimCoalg M coiter → IsTyBisimCoalg M coiter
+    FunBisim→TyBisim {M} {coiter} isFunBisimCoalg = λ ∼ → λ m₁ → λ m₂ →
+        isFunBisimCoalg (Ty→Fun {M} ∼) m₁ m₂
