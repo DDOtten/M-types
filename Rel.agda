@@ -31,7 +31,7 @@ module M-types.Rel where
 
     Ty→Fun : {X : Ty ℓ} →
         TyRel X → FunRel X
-    Ty→Fun {ℓ} {X} ∼ = λ x₁ → λ x₂ → x₁ ⟨ X / ∼ ⟩ x₂
+    Ty→Fun {_} {X} ∼ = λ x₁ → λ x₂ → x₁ ⟨ X / ∼ ⟩ x₂
 
     Fun→Ty : {X : Ty ℓ} →
         FunRel X → TyRel X
