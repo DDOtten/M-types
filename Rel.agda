@@ -20,6 +20,12 @@ module M-types.Rel where
     TyRel-syntax X ∼ x₁ x₂ = ∑[ s ∈ (ty ∼) ] ((ρ₁ ∼ s ≡ x₁) × (ρ₂ ∼ s ≡ x₂))
     syntax TyRel-syntax X ∼ x₁ x₂ = x₁ ⟨ X / ∼ ⟩ x₂
 
+    TyMor : {X : Ty ℓ} →
+        TyRel X → TyRel X → Ty ℓ
+    TyMor {_} {X} ∼ ≈ =
+        ∑[ fun ∈ (ty ∼ → ty ≈) ]
+        (ρ₁ ≈ ∘ fun ≡ ρ₁ ∼) × (ρ₂ ≈ ∘ fun ≡ ρ₂ ∼)
+
 
     FunRel : Ty ℓ → Ty (ℓ-suc ℓ)
     FunRel {ℓ} X = X → X → Ty ℓ
@@ -27,6 +33,12 @@ module M-types.Rel where
     FunRel-syntax : ∏[ X ∈ Ty ℓ ] ∏[ ∼ ∈ FunRel X ] ∏[ x₁ ∈ X ] ∏[ x₂ ∈ X ] Ty ℓ
     FunRel-syntax X ∼ x₁ x₂ = ∼ x₁ x₂
     syntax FunRel-syntax X ∼ x₁ x₂ = x₁ [ X / ∼ ] x₂
+
+    FunMor : {X : Ty ℓ} →
+        FunRel X → FunRel X → Ty ℓ
+    FunMor {_} {X} ∼ ≈ =
+        ∏[ x₁ ∈ X ] ∏[ x₂ ∈ X ]
+        (∼ x₁ x₂ → ≈ x₁ x₂)
 
 
     Ty→Fun : {X : Ty ℓ} →

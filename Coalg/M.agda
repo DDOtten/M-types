@@ -23,8 +23,8 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     IsCohCoalg M coiter =
         ∏[ C ∈ Coalg ] ∏[ f₁ ∈ Mor C M ] ∏[ f₂ ∈ Mor C M ]
         ∑[ p ∈ fun f₁ ≡ fun f₂ ] ∏[ c ∈ ty C ]
-        ap (λ f → obs M (f c)) p · com {C} {M} f₂ c ≡
-        com {C} {M} f₁ c · ap (λ f → P-fun f (obs C c)) p
+        ap (λ f → obs M (f c)) p · ≡-apply (com {C} {M} f₂) c ≡
+        ≡-apply (com {C} {M} f₁) c · ap (λ f → P-Fun f (obs C c)) p
 
     CohCoalg : Ty (ℓ-suc ℓ)
     CohCoalg = ∑[ M ∈ Coalg ] ∑[ coiter ∈ (∏[ C ∈ Coalg ] Mor C M) ]
@@ -61,17 +61,19 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
             fin : {C : Coalg} {f : Mor C M} →
                 (
                     ∑[ p ∈ fun f ≡ fun (coiter C) ] ∏[ c ∈ ty C ]
-                    ap (λ f → obs M (f c)) p · com {C} {M} (coiter C) c ≡
-                    com {C} {M} f c · ap (λ f → P-fun f (obs C c)) p
+                    ap (λ f → obs M (f c)) p · ≡-apply (com {C} {M} (coiter C)) c ≡
+                    ≡-apply (com {C} {M} f) c · ap (λ f → P-Fun f (obs C c)) p
                 ) → (f ≡ coiter C)
             fin {C} {f} (refl , coh) =
                 ≡-pair (
                     refl ,
-                    funext (λ c →
-                        (·-neutr₂ (com {C} {M} f c))⁻¹ ·
+                    (hom₁ (≡-apply , funext-axiom) (com {C} {M} f))⁻¹ ·
+                    ap (funext) (funext (λ c →
+                        (·-neutr₂ (≡-apply (com {C} {M} f) c))⁻¹ ·
                         (coh c)⁻¹ ·
-                        (·-neutr₁ (com {C} {M} (coiter C) c))
-                    )
+                        (·-neutr₁ (≡-apply (com {C} {M} (coiter C)) c))
+                    )) ·
+                    (hom₁ (≡-apply , funext-axiom) (com {C} {M} (coiter C)))
                 )
 
     Fin→Coh : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
@@ -82,15 +84,15 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
             coh : {C : Coalg} {f₁ f₂ : Mor C M} →
                 (f₁ ≡ f₂) → (
                     ∑[ p ∈ fun f₁ ≡ fun f₂ ] ∏[ c ∈ ty C ]
-                    ap (λ f → obs M (f c)) p · com {C} {M} f₂ c ≡
-                    com {C} {M} f₁ c · ap (λ f → P-fun f (obs C c)) p
+                    ap (λ f → obs M (f c)) p · ≡-apply (com {C} {M} f₂) c ≡
+                    ≡-apply (com {C} {M} f₁) c · ap (λ f → P-Fun f (obs C c)) p
                 )
             coh {C} {f} {f} refl =
                 (
                     refl ,
                     λ c →
-                        ·-neutr₁ (com {C} {M} f c) ·
-                        ·-neutr₂ (com {C} {M} f c)⁻¹
+                        ·-neutr₁ ( ≡-apply (com {C} {M} f) c) ·
+                        ·-neutr₂ ( ≡-apply (com {C} {M} f) c)⁻¹
                 )
 
     Fin→TyBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
@@ -111,19 +113,19 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
         ≡-apply (pr₁ (isCohCoalg (coalg {M} ∼) (ρ₁ {M} ∼) (ρ₂ {M} ∼))) s ·
         p₂
 
-    TyBisim→Coh : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
-        IsTyBisimCoalg M coiter → IsCohCoalg M coiter
-    TyBisim→Coh {M} {coiter} isTyBisimCoalg = λ C → λ f₁ → λ f₂ →
-        (
-            funext (λ c →
-                isTyBisimCoalg
-                    (C , f₁ , f₂)
-                    (fun f₁ c)
-                    (fun f₂ c)
-                    (c , refl , refl)
-            ) ,
-            {!   !}
-        )
+    -- TyBisim→Coh : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
+    --     IsTyBisimCoalg M coiter → IsCohCoalg M coiter
+    -- TyBisim→Coh {M} {coiter} isTyBisimCoalg = λ C → λ f₁ → λ f₂ →
+    --     (
+    --         funext (λ c →
+    --             isTyBisimCoalg
+    --                 (C , f₁ , f₂)
+    --                 (fun f₁ c)
+    --                 (fun f₂ c)
+    --                 (c , refl , refl)
+    --         ) ,
+    --         {!   !}
+    --     )
 
     TyBisim→FunBisim : {M : Coalg} {coiter : ∏[ C ∈ Coalg ] Mor C M} →
         IsTyBisimCoalg M coiter → IsFunBisimCoalg M coiter
