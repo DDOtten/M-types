@@ -6,21 +6,21 @@ open import M-types.Rel
 
 
 module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
-    P-Ty : Ty ℓ → Ty ℓ
-    P-Ty X = ∑[ a ∈ A ] (B a → X)
+    P : Ty ℓ → Ty ℓ
+    P X = ∑[ a ∈ A ] (B a → X)
 
     P-Fun : {X Y : Ty ℓ} →
-        (X → Y) → (P-Ty X → P-Ty Y)
+        (X → Y) → (P X → P Y)
     P-Fun f = λ (a , d) → (a , f ∘ d)
 
 
     P-TyRel : {X : Ty ℓ} →
-        TyRel X → TyRel (P-Ty X)
-    P-TyRel {X} ∼ = (P-Ty (ty ∼) , P-Fun (ρ₁ ∼) , P-Fun (ρ₂ ∼))
+        TyRel X → TyRel (P X)
+    P-TyRel {X} ∼ = (P (ty ∼) , P-Fun (ρ₁ ∼) , P-Fun (ρ₂ ∼))
 
-    P-TyMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
-        TyMor ∼ ≈ → TyMor (P-TyRel ∼) (P-TyRel ≈)
-    P-TyMor {X} {∼} {≈} (f , inc₁ , inc₂) =
+    P-TyRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
+        TyRelMor ∼ ≈ → TyRelMor (P-TyRel ∼) (P-TyRel ≈)
+    P-TyRelMor {X} {∼} {≈} (f , inc₁ , inc₂) =
         (
             P-Fun f ,
             ap P-Fun inc₁ ,
@@ -29,43 +29,48 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
 
 
     P-FunRel : {X : Ty ℓ} →
-        FunRel X → FunRel (P-Ty X)
+        FunRel X → FunRel (P X)
     P-FunRel {X} ∼ = λ (a₁ , d₁) → λ (a₂ , d₂) →
         ∑[ p ∈ a₁ ≡ a₂ ] ∏[ b₁ ∈ B a₁ ]
         (∼ (d₁ b₁) (d₂ (tra B p b₁)))
 
-    P-FunMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
-        FunMor ∼ ≈ → FunMor (P-FunRel ∼) (P-FunRel ≈)
-    P-FunMor {X} {∼} {≈} f = λ (a₁ , d₁) → λ (a₂ , d₂) → λ (p , e) → (
+    P-FunRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
+        FunRelMor ∼ ≈ → FunRelMor (P-FunRel ∼) (P-FunRel ≈)
+    P-FunRelMor {X} {∼} {≈} f = λ (a₁ , d₁) → λ (a₂ , d₂) → λ (p , e) → (
             p ,
             λ b → f (d₁ b) (d₂ (tra B p b)) (e b)
         )
 
 
     Coalg : Ty (ℓ-suc ℓ)
-    Coalg = ∑[ ty ∈ Ty ℓ ] (ty → P-Ty ty)
+    Coalg = ∑[ ty ∈ Ty ℓ ] (ty → P ty)
 
-    obs : ∏[ C ∈ Coalg ] (ty C → P-Ty (ty C))
-    obs (_ , obs) = obs
+    obs = pr₂
 
-    P-coalg : Coalg → Coalg
-    P-coalg C = (P-Ty (ty C) , P-Fun (obs C))
+    P-Coalg : Coalg → Coalg
+    P-Coalg C = (P (ty C) , P-Fun (obs C))
 
 
-    Mor :  Coalg → Coalg → Ty ℓ
-    Mor C D =
+    CoalgMor :  Coalg → Coalg → Ty ℓ
+    CoalgMor C D =
         ∑[ fun ∈ (ty C → ty D) ]
         obs D ∘ fun ≡ P-Fun fun ∘ obs C
 
-    com : {C D : Coalg} →
-        ∏[ f ∈ (Mor C D) ]
-        obs D ∘ fun f ≡ P-Fun (fun f) ∘ obs C
-    com (_ , com) = com
+    com = pr₂
 
-    P-mor : {C D : Coalg} →
-        Mor C D → Mor (P-coalg C) (P-coalg D)
-    P-mor {C} {D} f =
+    ∘-CoalgMor : {C D E : Coalg} →
+        CoalgMor D E → CoalgMor C D → CoalgMor C E
+    ∘-CoalgMor {C} {D} {E} g f =
+        (
+            fun g ∘ fun f ,
+            ap (λ h → h ∘ fun f) (com g) ·
+            ap (λ h → P-Fun (fun g) ∘ h) (com f)
+        )
+
+    P-CoalgMor : {C D : Coalg} →
+        CoalgMor C D → CoalgMor (P-Coalg C) (P-Coalg D)
+    P-CoalgMor {C} {D} f =
         (
             P-Fun (fun f) ,
-            ap P-Fun (com {C} {D} f)
+            ap P-Fun (com f)
         )

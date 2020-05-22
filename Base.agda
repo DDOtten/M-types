@@ -8,6 +8,7 @@ module M-types.Base where
     open import M-types.Eq public
     open import M-types.Equi public
     open import M-types.Contr public
+    open import M-types.Rel public
 
 
     postulate
