@@ -90,3 +90,22 @@ module M-types.Rel where
                 (λ s → refl)
             )
         )
+
+
+    TyRelMor→FunRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
+        TyRelMor ∼ ≈ → FunRelMor (TyRel→FunRel ∼) (TyRel→FunRel ≈)
+    TyRelMor→FunRelMor {_} {X} {∼} {≈} (fun , refl , refl) x₁ x₂ (s , refl , refl) =
+        (
+            fun s ,
+            refl ,
+            refl
+        )
+
+    FunRelMor→TyRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
+        FunRelMor ∼ ≈ → TyRelMor (FunRel→TyRel ∼) (FunRel→TyRel ≈)
+    FunRelMor→TyRelMor {_} {X} {∼} {≈} mor =
+        (
+            (λ (x₁ , x₂ , s) → (x₁ , x₂ , mor x₁ x₂ s)) ,
+            refl ,
+            refl
+        )

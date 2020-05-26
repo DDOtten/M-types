@@ -20,11 +20,11 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
 
     P-TyRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
         TyRelMor ∼ ≈ → TyRelMor (P-TyRel ∼) (P-TyRel ≈)
-    P-TyRelMor {X} {∼} {≈} (f , inc₁ , inc₂) =
+    P-TyRelMor {X} {∼} {≈} (fun , refl , refl) =
         (
-            P-Fun f ,
-            ap P-Fun inc₁ ,
-            ap P-Fun inc₂
+            P-Fun fun ,
+            refl ,
+            refl
         )
 
 
@@ -32,7 +32,7 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
         FunRel X → FunRel (P X)
     P-FunRel {X} ∼ = λ (a₁ , d₁) → λ (a₂ , d₂) →
         ∑[ p ∈ a₁ ≡ a₂ ] ∏[ b₁ ∈ B a₁ ]
-        (∼ (d₁ b₁) (d₂ (tra B p b₁)))
+        d₁ b₁ [ ∼ ] d₂ (tra B p b₁)
 
     P-FunRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
         FunRelMor ∼ ≈ → FunRelMor (P-FunRel ∼) (P-FunRel ≈)
@@ -58,15 +58,6 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
 
     com = pr₂
 
-    ∘-CoalgMor : {C D E : Coalg} →
-        CoalgMor D E → CoalgMor C D → CoalgMor C E
-    ∘-CoalgMor {C} {D} {E} g f =
-        (
-            fun g ∘ fun f ,
-            ap (λ h → h ∘ fun f) (com g) ·
-            ap (λ h → P-Fun (fun g) ∘ h) (com f)
-        )
-
     P-CoalgMor : {C D : Coalg} →
         CoalgMor C D → CoalgMor (P-Coalg C) (P-Coalg D)
     P-CoalgMor {C} {D} f =
@@ -74,3 +65,14 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
             P-Fun (fun f) ,
             ap P-Fun (com f)
         )
+
+
+    apply-pr₂ : {C : Coalg} {(a₁ , d₁) (a₂ , d₂) : P (ty C)} →
+        ∏[ p ∈ (a₁ , d₁) ≡ (a₂ , d₂) ] ∏[ b₁ ∈ B a₁ ]
+        d₁ b₁ ≡ d₂ (tra B (ap pr₁ p) b₁)
+    apply-pr₂ refl b = refl
+
+    fun-tra : {a₁ a₂ : A} {X : Ty ℓ} →
+        ∏[ p ∈ a₁ ≡ a₂ ] ∏[ f₂ ∈ (B a₂ → X) ]
+        tra (λ a → (B a → X)) p (f₂ ∘ (tra B p)) ≡ f₂
+    fun-tra refl f₂ = refl
