@@ -179,9 +179,17 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
 
 
     TyBisimMor→FunBisimMor : {C : Coalg} {∼ ≈ : TyBisim C} →
-        TyBisimMor {C} ∼ ≈ → FunBisimMor (TyBisim→FunBisim {C} ∼) (TyBisim→FunBisim {C} ≈)
+        TyBisimMor {C} ∼ ≈ → FunBisimMor {C} (TyBisim→FunBisim {C} ∼) (TyBisim→FunBisim {C} ≈)
     TyBisimMor→FunBisimMor {C} {∼} {≈} ((fun , refl , refl) , com) =
         (
             TyRelMor→FunRelMor (fun , refl , refl) ,
             λ c₁ → λ c₂ → funext (λ {(s , refl , refl) → {! ≡-apply com s  !}})
+        )
+
+    FunBisimMor→TyBisimMor : {C : Coalg} {∼ ≈ : FunBisim C} →
+        FunBisimMor {C} ∼ ≈ → TyBisimMor {C} (FunBisim→TyBisim {C} ∼) (FunBisim→TyBisim {C} ≈)
+    FunBisimMor→TyBisimMor {C} {∼} {≈} (mor , equ) =
+        (
+            FunRelMor→TyRelMor mor ,
+            funext (λ (c₁ , c₂ , s) → {! ≡-apply (equ c₁ c₂) s    !})
         )
