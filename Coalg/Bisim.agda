@@ -14,20 +14,20 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
         ∑[ coalg ∈ Coalg ]
         CoalgMor coalg C × CoalgMor coalg C
 
-    coalg = pr₁
+    coalg = pr₀
 
     tyRel : {C : Coalg} →
         ∏[ ∼ ∈ TyBisim C ] TyRel (ty C)
-    tyRel (coalg , ρ₁ , ρ₂) = (ty coalg , fun ρ₁ , fun ρ₂)
+    tyRel (coalg , ρ₀ , ρ₁) = (ty coalg , fun ρ₀ , fun ρ₁)
 
     tyLift : {C : Coalg} →
-        ∏[ ∼ ∈ TyBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
-        (c₁ ⟨ tyRel {C} ∼ ⟩ c₂ → (obs C c₁) ⟨ P-TyRel (tyRel {C} ∼) ⟩ (obs C c₂))
-    tyLift ∼ c₁ c₂ (s , refl , refl) =
+        ∏[ ∼ ∈ TyBisim C ] ∏[ c₀ ∈ ty C ] ∏[ c₁ ∈ ty C ]
+        (c₀ ⟨ tyRel {C} ∼ ⟩ c₁ → (obs C c₀) ⟨ P-TyRel (tyRel {C} ∼) ⟩ (obs C c₁))
+    tyLift ∼ c₀ c₁ (s , refl , refl) =
         (
             obs (coalg ∼) s ,
-            ≡-apply (com (ρ₁ ∼)⁻¹) s ,
-            ≡-apply (com (ρ₂ ∼)⁻¹) s
+            ≡-apply (com (ρ₀ ∼)⁻¹) s ,
+            ≡-apply (com (ρ₁ ∼)⁻¹) s
         )
 
     ≡-TyBisim : {C : Coalg} →
@@ -44,8 +44,8 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     P-TyBisim {C} ∼ =
         (
             P-Coalg (coalg ∼) ,
-            P-CoalgMor {coalg ∼} {C} (ρ₁ ∼) ,
-            P-CoalgMor {coalg ∼} {C} (ρ₂ ∼)
+            P-CoalgMor {coalg ∼} {C} (ρ₀ ∼) ,
+            P-CoalgMor {coalg ∼} {C} (ρ₁ ∼)
         )
 
 
@@ -59,21 +59,21 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     FunBisim : Coalg → Ty (ℓ-suc ℓ)
     FunBisim C =
         ∑[ funRel ∈ (ty C → ty C → Ty ℓ) ]
-        ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
-        (funRel c₁ c₂ → (P-FunRel funRel) (obs C c₁) (obs C c₂))
+        ∏[ c₀ ∈ ty C ] ∏[ c₁ ∈ ty C ]
+        (funRel c₀ c₁ → (P-FunRel funRel) (obs C c₀) (obs C c₁))
 
     funRel : {C : Coalg} →
         ∏[ ∼ ∈ FunBisim C ] FunRel (ty C)
-    funRel = pr₁
+    funRel = pr₀
 
     funLift : {C : Coalg} →
-        ∏[ ∼ ∈ FunBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
-        (c₁ [ funRel ∼ ] c₂ → (obs C c₁) [ P-FunRel (funRel ∼) ] (obs C c₂))
-    funLift = pr₂
+        ∏[ ∼ ∈ FunBisim C ] ∏[ c₀ ∈ ty C ] ∏[ c₁ ∈ ty C ]
+        (c₀ [ funRel ∼ ] c₁ → (obs C c₀) [ P-FunRel (funRel ∼) ] (obs C c₁))
+    funLift = pr₁
 
     ≡-Bisim : {C : Coalg} →
-        ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
-        (≡-FunRel c₁ c₂ → P-FunRel ≡-FunRel (obs C c₁) (obs C c₂))
+        ∏[ c₀ ∈ ty C ] ∏[ c₁ ∈ ty C ]
+        (≡-FunRel c₀ c₁ → P-FunRel ≡-FunRel (obs C c₀) (obs C c₁))
     ≡-Bisim c c refl = (refl , λ b → refl)
 
     ≡-FunBisim : {C : Coalg} →
@@ -85,9 +85,9 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     P-FunBisim {C} ∼ =
         (
             P-FunRel (funRel ∼) ,
-            λ (a , d₁) → λ (a , d₂) → λ (p , e) → (
+            λ (a , d₀) → λ (a , d₁) → λ (p , e) → (
                 p ,
-                λ b → pr₂ ∼ (d₁ b) (d₂ (tra B p b)) (e b)
+                λ b → pr₁ ∼ (d₀ b) (d₁ (tra B p b)) (e b)
             )
         )
 
@@ -96,40 +96,40 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
         FunBisim C → FunBisim C → Ty ℓ
     FunBisimMor {C} ∼ ≈ =
         ∑[ mor ∈ FunRelMor (funRel ∼) (funRel ≈) ]
-        ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
-        funLift ≈ c₁ c₂ ∘ mor c₁ c₂ ≡
-        P-FunRelMor mor (obs C c₁) (obs C c₂) ∘ funLift ∼ c₁ c₂
+        ∏[ c₀ ∈ ty C ] ∏[ c₁ ∈ ty C ]
+        funLift ≈ c₀ c₁ ∘ mor c₀ c₁ ≡
+        P-FunRelMor mor (obs C c₀) (obs C c₁) ∘ funLift ∼ c₀ c₁
 
 
     TyBisim→FunBisim : {C : Coalg} →
         TyBisim C → FunBisim C
     TyBisim→FunBisim {C} ∼ =
         (
-            (λ c₁ → λ c₂ → c₁ ⟨ tyRel {C} ∼ ⟩ c₂) ,
-            (λ c₁ → λ c₂ → λ {(s , refl , refl) → let
+            (λ c₀ → λ c₁ → c₀ ⟨ tyRel {C} ∼ ⟩ c₁) ,
+            (λ c₀ → λ c₁ → λ {(s , refl , refl) → let
+                    q₀ :
+                        obs C c₀ ≡ (
+                            pr₀ (obs (coalg ∼) s) ,
+                            fun (ρ₀ ∼) ∘ pr₁ (obs (coalg ∼) s)
+                        )
+                    q₀ = ≡-apply (com (ρ₀ ∼)) s
+
                     q₁ :
                         obs C c₁ ≡ (
-                            pr₁ (obs (coalg ∼) s) ,
-                            fun (ρ₁ ∼) ∘ pr₂ (obs (coalg ∼) s)
+                            pr₀ (obs (coalg ∼) s) ,
+                            fun (ρ₁ ∼) ∘ pr₁ (obs (coalg ∼) s)
                         )
                     q₁ = ≡-apply (com (ρ₁ ∼)) s
-
-                    q₂ :
-                        obs C c₂ ≡ (
-                            pr₁ (obs (coalg ∼) s) ,
-                            fun (ρ₂ ∼) ∘ pr₂ (obs (coalg ∼) s)
-                        )
-                    q₂ = ≡-apply (com (ρ₂ ∼)) s
                 in (
-                     (ap pr₁ q₁) · (ap pr₁ q₂)⁻¹ ,
-                     λ b₁ → (
-                         pr₂ (obs (coalg ∼) s) (tra B (ap pr₁ q₁) b₁) ,
-                         (apply-pr₂ {C} q₁ b₁)⁻¹ ,
-                         (apply-pr₂ {C} (q₂ ⁻¹) (tra B (ap pr₁ q₁) b₁)) ·
-                         ap (pr₂ (obs C c₂)) (≡-apply (
-                             tra-con B (ap pr₁ q₁) (ap pr₁ (q₂ ⁻¹)) ·
-                             (ap (λ r → tra B (ap pr₁ q₁ · r)) ((ap-inv pr₁ q₂)⁻¹))
-                         ) b₁)
+                     (ap pr₀ q₀) · (ap pr₀ q₁)⁻¹ ,
+                     λ b₀ → (
+                         pr₁ (obs (coalg ∼) s) (tra B (ap pr₀ q₀) b₀) ,
+                         (apply-pr₁ {C} q₀ b₀)⁻¹ ,
+                         (apply-pr₁ {C} (q₁ ⁻¹) (tra B (ap pr₀ q₀) b₀)) ·
+                         ap (pr₁ (obs C c₁)) (≡-apply (
+                             tra-con B (ap pr₀ q₀) (ap pr₀ (q₁ ⁻¹)) ·
+                             (ap (λ r → tra B (ap pr₀ q₀ · r)) ((ap-inv pr₀ q₁)⁻¹))
+                         ) b₀)
                      )
                 )
             })
@@ -140,42 +140,42 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     FunBisim→TyBisim {C} ∼ =
         (
             (
-                (∑[ c₁ ∈ ty C ] ∑[ c₂ ∈ ty C ] c₁ [ funRel ∼ ] c₂) ,
-                (λ (c₁ , c₂ , s) → (
-                    pr₁ (obs C c₁) ,
-                    λ b₁ → (
-                        pr₂ (obs C c₁) b₁ ,
-                        pr₂ (obs C c₂) (tra B (pr₁ (funLift ∼ c₁ c₂ s)) b₁) ,
-                        pr₂ (funLift ∼ c₁ c₂ s) b₁
+                (∑[ c₀ ∈ ty C ] ∑[ c₁ ∈ ty C ] c₀ [ funRel ∼ ] c₁) ,
+                (λ (c₀ , c₁ , s) → (
+                    pr₀ (obs C c₀) ,
+                    λ b₀ → (
+                        pr₁ (obs C c₀) b₀ ,
+                        pr₁ (obs C c₁) (tra B (pr₀ (funLift ∼ c₀ c₁ s)) b₀) ,
+                        pr₁ (funLift ∼ c₀ c₁ s) b₀
                     )
                 ))
             ) ,
             (
-                pr₁ ,
-                funext (λ (c₁ , c₂ , s) → ≡-pair (
+                pr₀ ,
+                funext (λ (c₀ , c₁ , s) → ≡-pair (
                     refl ,
                     refl
                 ))
             ) ,
             (
-                pr₁ ∘ pr₂ ,
-                funext (λ (c₁ , c₂ , s) → ≡-pair (
-                    (pr₁ (funLift ∼ c₁ c₂ s)) ,
-                    fun-tra (pr₁ (funLift ∼ c₁ c₂ s)) (pr₂ (obs C c₂))
+                pr₀ ∘ pr₁ ,
+                funext (λ (c₀ , c₁ , s) → ≡-pair (
+                    (pr₀ (funLift ∼ c₀ c₁ s)) ,
+                    fun-tra (pr₀ (funLift ∼ c₀ c₁ s)) (pr₁ (obs C c₁))
                 )⁻¹)
             )
         )
 
 
     TyBisim→FunBisim-pres : {C : Coalg} →
-        ∏[ ∼ ∈ TyBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
-        (c₁ [ funRel {C} (TyBisim→FunBisim {C} ∼) ] c₂) ≡ (c₁ ⟨ tyRel {C} ∼ ⟩ c₂)
-    TyBisim→FunBisim-pres {C} ∼ c₁ c₂ = TyRel→FunRel-pres (tyRel {C} ∼) c₁ c₂
+        ∏[ ∼ ∈ TyBisim C ] ∏[ c₀ ∈ ty C ] ∏[ c₁ ∈ ty C ]
+        (c₀ [ funRel {C} (TyBisim→FunBisim {C} ∼) ] c₁) ≡ (c₀ ⟨ tyRel {C} ∼ ⟩ c₁)
+    TyBisim→FunBisim-pres {C} ∼ c₀ c₁ = TyRel→FunRel-pres (tyRel {C} ∼) c₀ c₁
 
     FunBisim→TyBisim-pres : {C : Coalg} →
-        ∏[ ∼ ∈ FunBisim C ] ∏[ c₁ ∈ ty C ] ∏[ c₂ ∈ ty C ]
-        (c₁ ⟨ tyRel {C} (FunBisim→TyBisim {C} ∼) ⟩ c₂) ≃ (c₁ [ funRel {C} ∼ ] c₂)
-    FunBisim→TyBisim-pres ∼ c₁ c₂ = FunRel→TyRel-pres (funRel ∼) c₁ c₂
+        ∏[ ∼ ∈ FunBisim C ] ∏[ c₀ ∈ ty C ] ∏[ c₁ ∈ ty C ]
+        (c₀ ⟨ tyRel {C} (FunBisim→TyBisim {C} ∼) ⟩ c₁) ≃ (c₀ [ funRel {C} ∼ ] c₁)
+    FunBisim→TyBisim-pres ∼ c₀ c₁ = FunRel→TyRel-pres (funRel ∼) c₀ c₁
 
 
     TyBisimMor→FunBisimMor : {C : Coalg} {∼ ≈ : TyBisim C} →
@@ -183,7 +183,7 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     TyBisimMor→FunBisimMor {C} {∼} {≈} ((fun , refl , refl) , com) =
         (
             TyRelMor→FunRelMor (fun , refl , refl) ,
-            λ c₁ → λ c₂ → funext (λ {(s , refl , refl) → {! ≡-apply com s  !}})
+            λ c₀ → λ c₁ → funext (λ {(s , refl , refl) → {! ≡-apply com s  !}})
         )
 
     FunBisimMor→TyBisimMor : {C : Coalg} {∼ ≈ : FunBisim C} →
@@ -191,5 +191,5 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     FunBisimMor→TyBisimMor {C} {∼} {≈} (mor , equ) =
         (
             FunRelMor→TyRelMor mor ,
-            funext (λ (c₁ , c₂ , s) → {! ≡-apply (equ c₁ c₂) s    !})
+            funext (λ (c₀ , c₁ , s) → {! ≡-apply (equ c₀ c₁) s  !})
         )

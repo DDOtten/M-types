@@ -10,7 +10,7 @@ module M-types.Ty where
         )
 
     variable
-        ℓ ℓ₁ ℓ₂ ℓ₃ : Level
+        ℓ ℓ₀ ℓ₁ ℓ₂ : Level
 
 
     Ty : (ℓ : Level) → Set (ℓ-suc ℓ)

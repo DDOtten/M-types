@@ -13,34 +13,34 @@ module M-types.Eq where
     open _≡_ public
 
     infix 10 _⁻¹
-    _⁻¹ : {X : Ty ℓ} {x₁ x₂ : X} →
-        x₁ ≡ x₂ → x₂ ≡ x₁
+    _⁻¹ : {X : Ty ℓ} {x₀ x₁ : X} →
+        x₀ ≡ x₁ → x₁ ≡ x₀
     refl ⁻¹ = refl
 
     infixr 9 _·_
-    _·_ : {X : Ty ℓ} {x₁ x₂ x₃ : X} →
-        x₁ ≡ x₂ → x₂ ≡ x₃ → x₁ ≡ x₃
+    _·_ : {X : Ty ℓ} {x₀ x₁ x₂ : X} →
+        x₀ ≡ x₁ → x₁ ≡ x₂ → x₀ ≡ x₂
     refl · refl = refl
 
 
-    ·-neutr₁ : {X : Ty ℓ} {x₁ x₂ : X} →
-        ∏[ p ∈ x₁ ≡ x₂ ] refl · p ≡ p
-    ·-neutr₁ refl = refl
+    ·-neutr₀ : {X : Ty ℓ} {x₀ x₁ : X} →
+        ∏[ p ∈ x₀ ≡ x₁ ] refl · p ≡ p
+    ·-neutr₀ refl = refl
 
-    ·-neutr₂ : {X : Ty ℓ} {x₁ x₂ : X} →
-        ∏[ p ∈ x₁ ≡ x₂ ] p · refl ≡ p
-    ·-neutr₂ refl = refl
+    ·-neutr₁ : {X : Ty ℓ} {x₀ x₁ : X} →
+        ∏[ p ∈ x₀ ≡ x₁ ] p · refl ≡ p
+    ·-neutr₁ refl = refl
 
 
     infix 1 begin_
-    begin_ : {X : Ty ℓ} {x₁ x₂ : X} →
-        (x₁ ≡ x₂) → (x₁ ≡ x₂)
+    begin_ : {X : Ty ℓ} {x₀ x₁ : X} →
+        (x₀ ≡ x₁) → (x₀ ≡ x₁)
     begin p = p
 
     infixr 2 _≡⟨_⟩_
-    _≡⟨_⟩_ : {X : Ty ℓ₁} {x₂ x₃ : X} →
-        ∏[ x₁ ∈ X ] ((x₁ ≡ x₂) → (x₂ ≡ x₃) → (x₁ ≡ x₃))
-    x₁ ≡⟨ p₁ ⟩ p₂ = p₁ · p₂
+    _≡⟨_⟩_ : {X : Ty ℓ₀} {x₁ x₂ : X} →
+        ∏[ x₀ ∈ X ] ((x₀ ≡ x₁) → (x₁ ≡ x₂) → (x₀ ≡ x₂))
+    x₀ ≡⟨ p₀ ⟩ p₁ = p₀ · p₁
 
     infix 3 _∎
     _∎ : {X : Ty ℓ} →
@@ -48,34 +48,34 @@ module M-types.Eq where
     x ∎ = refl
 
 
-    tra : {X : Ty ℓ} {x₁ x₂ : X} →
-        ∏[ Y ∈ (X → Ty ℓ₂) ] (x₁ ≡ x₂ → (Y x₁ → Y x₂))
+    tra : {X : Ty ℓ} {x₀ x₁ : X} →
+        ∏[ Y ∈ (X → Ty ℓ₁) ] (x₀ ≡ x₁ → (Y x₀ → Y x₁))
     tra f refl = id
 
-    tra-con : {X : Ty ℓ₁} {x₁ x₂ x₃ : X} →
-        ∏[ Y ∈ (X → Ty ℓ₂) ] ∏[ p₁ ∈ x₁ ≡ x₂ ] ∏[ p₂ ∈ x₂ ≡ x₃ ]
-        (tra Y p₂) ∘ (tra Y p₁) ≡ tra Y (p₁ · p₂)
+    tra-con : {X : Ty ℓ₀} {x₀ x₁ x₂ : X} →
+        ∏[ Y ∈ (X → Ty ℓ₁) ] ∏[ p₀ ∈ x₀ ≡ x₁ ] ∏[ p₁ ∈ x₁ ≡ x₂ ]
+        (tra Y p₁) ∘ (tra Y p₀) ≡ tra Y (p₀ · p₁)
     tra-con Y refl refl = refl
 
 
-    ap : {X : Ty ℓ₁} {Y : Ty ℓ₂} {x₁ x₂ : X} →
-        ∏[ f ∈ (X → Y) ] ((x₁ ≡ x₂) → (f x₁ ≡ f x₂))
+    ap : {X : Ty ℓ₀} {Y : Ty ℓ₁} {x₀ x₁ : X} →
+        ∏[ f ∈ (X → Y) ] ((x₀ ≡ x₁) → (f x₀ ≡ f x₁))
     ap f refl = refl
 
-    ap-inv : {X : Ty ℓ₁} {Y : Ty ℓ₂} {x₁ x₂ : X} →
-        ∏[ f ∈ (X → Y) ] ∏[ p ∈ x₁ ≡ x₂ ] (ap f p)⁻¹ ≡ ap f (p ⁻¹)
+    ap-inv : {X : Ty ℓ₀} {Y : Ty ℓ₁} {x₀ x₁ : X} →
+        ∏[ f ∈ (X → Y) ] ∏[ p ∈ x₀ ≡ x₁ ] (ap f p)⁻¹ ≡ ap f (p ⁻¹)
     ap-inv f refl = refl
 
 
-    apd : {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {x₁ x₂ : X} →
-        ∏[ f ∈ (∏ X Y) ] ∏[ p ∈ x₁ ≡ x₂ ] tra Y p (f x₁) ≡ f x₂
+    apd : {X : Ty ℓ₀} {Y : X → Ty ℓ₁} {x₀ x₁ : X} →
+        ∏[ f ∈ (∏ X Y) ] ∏[ p ∈ x₀ ≡ x₁ ] tra Y p (f x₀) ≡ f x₁
     apd f refl = refl
 
 
-    ≡-pair : {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {w₁ w₂ : ∑ X Y} →
-        (∑[ p ∈ pr₁ w₁ ≡ pr₁ w₂ ] ((tra Y p (pr₂ w₁)) ≡ (pr₂ w₂))) → (w₁ ≡ w₂)
+    ≡-pair : {X : Ty ℓ₀} {Y : X → Ty ℓ₁} {w₀ w₁ : ∑ X Y} →
+        (∑[ p ∈ pr₀ w₀ ≡ pr₀ w₁ ] ((tra Y p (pr₁ w₀)) ≡ (pr₁ w₁))) → (w₀ ≡ w₁)
     ≡-pair (refl , refl) = refl
 
-    ≡-apply : {X : Ty ℓ₁} {Y : X → Ty ℓ₂} {f₁ f₂ : ∏ X Y} →
-        (f₁ ≡ f₂) → (∏[ x ∈ X ] (f₁ x ≡ f₂ x))
+    ≡-apply : {X : Ty ℓ₀} {Y : X → Ty ℓ₁} {f₀ f₁ : ∏ X Y} →
+        (f₀ ≡ f₁) → (∏[ x ∈ X ] (f₀ x ≡ f₁ x))
     ≡-apply refl = λ x → refl

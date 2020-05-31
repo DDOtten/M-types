@@ -12,18 +12,18 @@ module M-types.Rel where
     TyRel : Ty ℓ → Ty (ℓ-suc ℓ)
     TyRel {ℓ} X = ∑[ ty ∈ Ty ℓ ] (ty → X) × (ty → X)
 
-    ρ₁ : {X : Ty ℓ₁} {Y Z : X → Ty ℓ₂} →
-        ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Y (pr₁ s)
-    ρ₁ = pr₁ ∘ pr₂
+    ρ₀ : {X : Ty ℓ₀} {Y Z : X → Ty ℓ₁} →
+        ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Y (pr₀ s)
+    ρ₀ = pr₀ ∘ pr₁
 
-    ρ₂ : {X : Ty ℓ₁} {Y Z : X → Ty ℓ₂} →
-        ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Z (pr₁ s)
-    ρ₂ = pr₂ ∘ pr₂
+    ρ₁ : {X : Ty ℓ₀} {Y Z : X → Ty ℓ₁} →
+        ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Z (pr₀ s)
+    ρ₁ = pr₁ ∘ pr₁
 
     TyRel-syntax : {X : Ty ℓ} →
-        ∏[ ∼ ∈ TyRel X ] ∏[ x₁ ∈ X ] ∏[ x₂ ∈ X ] Ty ℓ
-    TyRel-syntax ∼ x₁ x₂ = ∑[ s ∈ (ty ∼) ] ((ρ₁ ∼ s ≡ x₁) × (ρ₂ ∼ s ≡ x₂))
-    syntax TyRel-syntax ∼ x₁ x₂ = x₁ ⟨ ∼ ⟩ x₂
+        ∏[ ∼ ∈ TyRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ] Ty ℓ
+    TyRel-syntax ∼ x₀ x₁ = ∑[ s ∈ (ty ∼) ] ((ρ₀ ∼ s ≡ x₀) × (ρ₁ ∼ s ≡ x₁))
+    syntax TyRel-syntax ∼ x₀ x₁ = x₀ ⟨ ∼ ⟩ x₁
 
     ≡-TyRel : {X : Ty ℓ} →
         TyRel X
@@ -34,59 +34,59 @@ module M-types.Rel where
         TyRel X → TyRel X → Ty ℓ
     TyRelMor {_} {X} ∼ ≈ =
         ∑[ fun ∈ (ty ∼ → ty ≈) ]
-        (ρ₁ ≈ ∘ fun ≡ ρ₁ ∼) × (ρ₂ ≈ ∘ fun ≡ ρ₂ ∼)
+        (ρ₀ ≈ ∘ fun ≡ ρ₀ ∼) × (ρ₁ ≈ ∘ fun ≡ ρ₁ ∼)
 
 
     FunRel : Ty ℓ → Ty (ℓ-suc ℓ)
     FunRel {ℓ} X = X → X → Ty ℓ
 
     FunRel-syntax : {X : Ty ℓ} →
-        ∏[ ∼ ∈ FunRel X ] ∏[ x₁ ∈ X ] ∏[ x₂ ∈ X ] Ty ℓ
-    FunRel-syntax ∼ x₁ x₂ = ∼ x₁ x₂
-    syntax FunRel-syntax ∼ x₁ x₂ = x₁ [ ∼ ] x₂
+        ∏[ ∼ ∈ FunRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ] Ty ℓ
+    FunRel-syntax ∼ x₀ x₁ = ∼ x₀ x₁
+    syntax FunRel-syntax ∼ x₀ x₁ = x₀ [ ∼ ] x₁
 
     ≡-FunRel : {X : Ty ℓ} →
         FunRel X
-    ≡-FunRel = λ x₁ → λ x₂ → x₁ ≡ x₂
+    ≡-FunRel = λ x₀ → λ x₁ → x₀ ≡ x₁
 
 
     FunRelMor : {X : Ty ℓ} →
         FunRel X → FunRel X → Ty ℓ
     FunRelMor {_} {X} ∼ ≈ =
-        ∏[ x₁ ∈ X ] ∏[ x₂ ∈ X ]
-        (x₁ [ ∼ ] x₂ → x₁ [ ≈ ] x₂)
+        ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
+        (x₀ [ ∼ ] x₁ → x₀ [ ≈ ] x₁)
 
 
     TyRel→FunRel : {X : Ty ℓ} →
         TyRel X → FunRel X
-    TyRel→FunRel {_} {X} ∼ = λ x₁ → λ x₂ → x₁ ⟨ ∼ ⟩ x₂
+    TyRel→FunRel {_} {X} ∼ = λ x₀ → λ x₁ → x₀ ⟨ ∼ ⟩ x₁
 
     FunRel→TyRel : {X : Ty ℓ} →
         FunRel X → TyRel X
     FunRel→TyRel {_} {X} ∼ =
         (
-            (∑[ x₁ ∈ X ] ∑[ x₂ ∈ X ] x₁ [ ∼ ] x₂) ,
-            pr₁ ,
-            pr₁ ∘ pr₂
+            (∑[ x₀ ∈ X ] ∑[ x₁ ∈ X ] x₀ [ ∼ ] x₁) ,
+            pr₀ ,
+            pr₀ ∘ pr₁
         )
 
 
     TyRel→FunRel-pres : {X : Ty ℓ} →
-        ∏[ ∼ ∈ TyRel X ] ∏[ x₁ ∈ X ] ∏[ x₂ ∈ X ]
-        (x₁ [ TyRel→FunRel ∼ ] x₂) ≡ (x₁ ⟨ ∼ ⟩ x₂)
-    TyRel→FunRel-pres ∼ x₁ x₂ = refl
+        ∏[ ∼ ∈ TyRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
+        (x₀ [ TyRel→FunRel ∼ ] x₁) ≡ (x₀ ⟨ ∼ ⟩ x₁)
+    TyRel→FunRel-pres ∼ x₀ x₁ = refl
 
     FunRel→TyRel-pres : {X : Ty ℓ} →
-        ∏[ ∼ ∈ FunRel X ] ∏[ x₁ ∈ X ] ∏[ x₂ ∈ X ]
-        (x₁ ⟨ FunRel→TyRel ∼ ⟩ x₂) ≃ (x₁ [ ∼ ] x₂)
-    FunRel→TyRel-pres {_} {X} ∼ x₁ x₂ =
+        ∏[ ∼ ∈ FunRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
+        (x₀ ⟨ FunRel→TyRel ∼ ⟩ x₁) ≃ (x₀ [ ∼ ] x₁)
+    FunRel→TyRel-pres {_} {X} ∼ x₀ x₁ =
         (
-            (λ ((y₁ , y₂ , s) , p₁ , p₂) →
-                tra (λ x → x [ ∼ ] x₂) p₁ (tra (λ y → y₁ [ ∼ ] y) p₂ s)
+            (λ ((y₀ , y₁ , s) , p₀ , p₁) →
+                tra (λ x → x [ ∼ ] x₁) p₀ (tra (λ y → y₀ [ ∼ ] y) p₁ s)
             ) ,
             Qinv→IsEqui (
-                (λ s → ((x₁ , x₂ , s) , refl , refl)) ,
-                (λ {((x₁ , x₂ , s) , refl , refl) → refl}) ,
+                (λ s → ((x₀ , x₁ , s) , refl , refl)) ,
+                (λ {((x₀ , x₁ , s) , refl , refl) → refl}) ,
                 (λ s → refl)
             )
         )
@@ -94,7 +94,7 @@ module M-types.Rel where
 
     TyRelMor→FunRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
         TyRelMor ∼ ≈ → FunRelMor (TyRel→FunRel ∼) (TyRel→FunRel ≈)
-    TyRelMor→FunRelMor {_} {X} {∼} {≈} (fun , refl , refl) x₁ x₂ (s , refl , refl) =
+    TyRelMor→FunRelMor {_} {X} {∼} {≈} (fun , refl , refl) x₀ x₁ (s , refl , refl) =
         (
             fun s ,
             refl ,
@@ -105,7 +105,7 @@ module M-types.Rel where
         FunRelMor ∼ ≈ → TyRelMor (FunRel→TyRel ∼) (FunRel→TyRel ≈)
     FunRelMor→TyRelMor {_} {X} {∼} {≈} mor =
         (
-            (λ (x₁ , x₂ , s) → (x₁ , x₂ , mor x₁ x₂ s)) ,
+            (λ (x₀ , x₁ , s) → (x₀ , x₁ , mor x₀ x₁ s)) ,
             refl ,
             refl
         )

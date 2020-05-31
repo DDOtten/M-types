@@ -8,45 +8,45 @@ open import M-types.Eq
 
 
 module M-types.Equi where
-    Qinv : {X : Ty ℓ₁} {Y : Ty ℓ₂} →
-        ∏[ f ∈ (X → Y)] Ty (ℓ-max ℓ₁ ℓ₂)
+    Qinv : {X : Ty ℓ₀} {Y : Ty ℓ₁} →
+        ∏[ f ∈ (X → Y)] Ty (ℓ-max ℓ₀ ℓ₁)
     Qinv {_} {_} {X} {Y} f = ∑[ g ∈ (Y → X) ]
         (∏[ x ∈ X ] g (f x) ≡ x) ×
         (∏[ y ∈ Y ] f (g y) ≡ y)
 
-    IsEqui : {X : Ty ℓ₁} {Y : Ty ℓ₂} →
-        ∏[ f ∈ (X → Y) ] Ty (ℓ-max ℓ₁ ℓ₂)
+    IsEqui : {X : Ty ℓ₀} {Y : Ty ℓ₁} →
+        ∏[ f ∈ (X → Y) ] Ty (ℓ-max ℓ₀ ℓ₁)
     IsEqui {_} {_} {X} {Y} f =
         (∑[ g ∈ (Y → X) ] ∏[ x ∈ X ] g (f x) ≡ x) ×
         (∑[ g ∈ (Y → X) ] ∏[ y ∈ Y ] f (g y) ≡ y)
 
     infix 8 _≃_
-    _≃_ : ∏[ X ∈ Ty ℓ₁ ] ∏[ Y ∈ Ty ℓ₂ ] Ty (ℓ-max ℓ₁ ℓ₂)
+    _≃_ : ∏[ X ∈ Ty ℓ₀ ] ∏[ Y ∈ Ty ℓ₁ ] Ty (ℓ-max ℓ₀ ℓ₁)
     X ≃ Y = ∑[ f ∈ (X → Y) ] IsEqui f
 
 
-    Qinv→IsEqui : {X : Ty ℓ₁} {Y : Ty ℓ₂} {f : X → Y} →
+    Qinv→IsEqui : {X : Ty ℓ₀} {Y : Ty ℓ₁} {f : X → Y} →
         Qinv f → IsEqui f
-    Qinv→IsEqui (g , hom₁ , hom₂) = ((g , hom₁) , (g , hom₂))
+    Qinv→IsEqui (g , hom₀ , hom₁) = ((g , hom₀) , (g , hom₁))
 
-    IsEqui→Qinv : {X : Ty ℓ₁} {Y : Ty ℓ₂} {f : X → Y} →
+    IsEqui→Qinv : {X : Ty ℓ₀} {Y : Ty ℓ₁} {f : X → Y} →
         IsEqui f → Qinv f
-    IsEqui→Qinv {_} {_} {_} {_} {f} ((g₁ , hom₁) , (g₂ , hom₂)) =
+    IsEqui→Qinv {_} {_} {_} {_} {f} ((g₀ , hom₀) , (g₁ , hom₁)) =
         (
-            g₁ ,
-            hom₁ ,
-            λ y → ap f (ap g₁ (hom₂ y)⁻¹ · hom₁ (g₂ y)) · hom₂ y
+            g₀ ,
+            hom₀ ,
+            λ y → ap f (ap g₀ (hom₁ y)⁻¹ · hom₀ (g₁ y)) · hom₁ y
         )
 
 
-    inv : {X : Ty ℓ₁} {Y : Ty ℓ₂} →
+    inv : {X : Ty ℓ₀} {Y : Ty ℓ₁} →
         ∏[ equi ∈ X ≃ Y ] (Y → X)
-    inv (fun , isEqui) = pr₁ (IsEqui→Qinv isEqui)
+    inv (fun , isEqui) = pr₀ (IsEqui→Qinv isEqui)
 
-    hom₁ : {X : Ty ℓ₁} {Y : Ty ℓ₂} →
+    hom₀ : {X : Ty ℓ₀} {Y : Ty ℓ₁} →
         ∏[ equi ∈ X ≃ Y ] ∏[ x ∈ X ] inv equi (fun equi x) ≡ x
-    hom₁ (fun , isEqui) = pr₁ (pr₂ (IsEqui→Qinv isEqui))
+    hom₀ (fun , isEqui) = pr₀ (pr₁ (IsEqui→Qinv isEqui))
 
-    hom₂ : {X : Ty ℓ₁} {Y : Ty ℓ₂} →
+    hom₁ : {X : Ty ℓ₀} {Y : Ty ℓ₁} →
         ∏[ equi ∈ X ≃ Y ] ∏[ y ∈ Y ] fun equi (inv equi y) ≡ y
-    hom₂ (fun , isEqui) = pr₂ (pr₂ (IsEqui→Qinv isEqui))
+    hom₁ (fun , isEqui) = pr₁ (pr₁ (IsEqui→Qinv isEqui))

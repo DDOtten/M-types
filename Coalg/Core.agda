@@ -16,7 +16,7 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
 
     P-TyRel : {X : Ty ℓ} →
         TyRel X → TyRel (P X)
-    P-TyRel {X} ∼ = (P (ty ∼) , P-Fun (ρ₁ ∼) , P-Fun (ρ₂ ∼))
+    P-TyRel {X} ∼ = (P (ty ∼) , P-Fun (ρ₀ ∼) , P-Fun (ρ₁ ∼))
 
     P-TyRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
         TyRelMor ∼ ≈ → TyRelMor (P-TyRel ∼) (P-TyRel ≈)
@@ -30,22 +30,22 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
 
     P-FunRel : {X : Ty ℓ} →
         FunRel X → FunRel (P X)
-    P-FunRel {X} ∼ = λ (a₁ , d₁) → λ (a₂ , d₂) →
-        ∑[ p ∈ a₁ ≡ a₂ ] ∏[ b₁ ∈ B a₁ ]
-        d₁ b₁ [ ∼ ] d₂ (tra B p b₁)
+    P-FunRel {X} ∼ = λ (a₀ , d₀) → λ (a₁ , d₁) →
+        ∑[ p ∈ a₀ ≡ a₁ ] ∏[ b₀ ∈ B a₀ ]
+        d₀ b₀ [ ∼ ] d₁ (tra B p b₀)
 
     P-FunRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
         FunRelMor ∼ ≈ → FunRelMor (P-FunRel ∼) (P-FunRel ≈)
-    P-FunRelMor {X} {∼} {≈} f = λ (a₁ , d₁) → λ (a₂ , d₂) → λ (p , e) → (
+    P-FunRelMor {X} {∼} {≈} f = λ (a₀ , d₀) → λ (a₁ , d₁) → λ (p , e) → (
             p ,
-            λ b → f (d₁ b) (d₂ (tra B p b)) (e b)
+            λ b → f (d₀ b) (d₁ (tra B p b)) (e b)
         )
 
 
     Coalg : Ty (ℓ-suc ℓ)
     Coalg = ∑[ ty ∈ Ty ℓ ] (ty → P ty)
 
-    obs = pr₂
+    obs = pr₁
 
     P-Coalg : Coalg → Coalg
     P-Coalg C = (P (ty C) , P-Fun (obs C))
@@ -56,7 +56,7 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
         ∑[ fun ∈ (ty C → ty D) ]
         obs D ∘ fun ≡ P-Fun fun ∘ obs C
 
-    com = pr₂
+    com = pr₁
 
     P-CoalgMor : {C D : Coalg} →
         CoalgMor C D → CoalgMor (P-Coalg C) (P-Coalg D)
@@ -67,12 +67,12 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
         )
 
 
-    apply-pr₂ : {C : Coalg} {(a₁ , d₁) (a₂ , d₂) : P (ty C)} →
-        ∏[ p ∈ (a₁ , d₁) ≡ (a₂ , d₂) ] ∏[ b₁ ∈ B a₁ ]
-        d₁ b₁ ≡ d₂ (tra B (ap pr₁ p) b₁)
-    apply-pr₂ refl b = refl
+    apply-pr₁ : {C : Coalg} {(a₀ , d₀) (a₁ , d₁) : P (ty C)} →
+        ∏[ p ∈ (a₀ , d₀) ≡ (a₁ , d₁) ] ∏[ b₀ ∈ B a₀ ]
+        d₀ b₀ ≡ d₁ (tra B (ap pr₀ p) b₀)
+    apply-pr₁ refl b = refl
 
-    fun-tra : {a₁ a₂ : A} {X : Ty ℓ} →
-        ∏[ p ∈ a₁ ≡ a₂ ] ∏[ f₂ ∈ (B a₂ → X) ]
-        tra (λ a → (B a → X)) p (f₂ ∘ (tra B p)) ≡ f₂
-    fun-tra refl f₂ = refl
+    fun-tra : {a₀ a₁ : A} {X : Ty ℓ} →
+        ∏[ p ∈ a₀ ≡ a₁ ] ∏[ f₁ ∈ (B a₁ → X) ]
+        tra (λ a → (B a → X)) p (f₁ ∘ (tra B p)) ≡ f₁
+    fun-tra refl f₁ = refl
