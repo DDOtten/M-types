@@ -1,13 +1,13 @@
 {-# OPTIONS --without-K #-}
 
 
-open import M-types.Ty
-open import M-types.Sum
-open import M-types.Prod
-open import M-types.Eq
+open import M-types.Base.Core
+open import M-types.Base.Sum
+open import M-types.Base.Prod
+open import M-types.Base.Eq
 
 
-module M-types.Equi where
+module M-types.Base.Equi where
     Qinv : {X : Ty ℓ₀} {Y : Ty ℓ₁} →
         ∏[ f ∈ (X → Y)] Ty (ℓ-max ℓ₀ ℓ₁)
     Qinv {_} {_} {X} {Y} f = ∑[ g ∈ (Y → X) ]

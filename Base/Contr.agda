@@ -1,12 +1,12 @@
 {-# OPTIONS --without-K #-}
 
-open import M-types.Ty
-open import M-types.Sum
-open import M-types.Prod
-open import M-types.Eq
+open import M-types.Base.Core
+open import M-types.Base.Sum
+open import M-types.Base.Prod
+open import M-types.Base.Eq
 
 
-module M-types.Contr where
+module M-types.Base.Contr where
     IsContr : ∏[ X ∈ Ty ℓ ] Ty ℓ
     IsContr X = ∑[ x ∈ X ] ∏[ x′ ∈ X ] x′ ≡ x
 

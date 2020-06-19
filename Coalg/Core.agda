@@ -2,7 +2,6 @@
 
 
 open import M-types.Base
-open import M-types.Rel
 
 
 module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
@@ -20,11 +19,11 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
 
     P-TyRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
         TyRelMor ∼ ≈ → TyRelMor (P-TyRel ∼) (P-TyRel ≈)
-    P-TyRelMor {X} {∼} {≈} (fun , refl , refl) =
+    P-TyRelMor {X} {∼} {≈} f =
         (
-            P-Fun fun ,
-            refl ,
-            refl
+            P-Fun (fun f) ,
+            ap P-Fun (com₀ f) ,
+            ap P-Fun (com₁ f)
         )
 
 
@@ -38,7 +37,7 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
         FunRelMor ∼ ≈ → FunRelMor (P-FunRel ∼) (P-FunRel ≈)
     P-FunRelMor {X} {∼} {≈} f = λ (a₀ , d₀) → λ (a₁ , d₁) → λ (p , e) → (
             p ,
-            λ b → f (d₀ b) (d₁ (tra B p b)) (e b)
+            λ b₀ → f (d₀ b₀) (d₁ (tra B p b₀)) (e b₀)
         )
 
 
@@ -48,31 +47,20 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
     obs = pr₁
 
     P-Coalg : Coalg → Coalg
-    P-Coalg C = (P (ty C) , P-Fun (obs C))
+    P-Coalg X = (P (ty X) , P-Fun (obs X))
 
 
     CoalgMor :  Coalg → Coalg → Ty ℓ
-    CoalgMor C D =
-        ∑[ fun ∈ (ty C → ty D) ]
-        obs D ∘ fun ≡ P-Fun fun ∘ obs C
+    CoalgMor X Y =
+        ∑[ fun ∈ (ty X → ty Y) ]
+        obs Y ∘ fun ≡ P-Fun fun ∘ obs X
 
     com = pr₁
 
-    P-CoalgMor : {C D : Coalg} →
-        CoalgMor C D → CoalgMor (P-Coalg C) (P-Coalg D)
-    P-CoalgMor {C} {D} f =
+    P-CoalgMor : {X Y : Coalg} →
+        CoalgMor X Y → CoalgMor (P-Coalg X) (P-Coalg Y)
+    P-CoalgMor {X} {Y} f =
         (
             P-Fun (fun f) ,
             ap P-Fun (com f)
         )
-
-
-    apply-pr₁ : {C : Coalg} {(a₀ , d₀) (a₁ , d₁) : P (ty C)} →
-        ∏[ p ∈ (a₀ , d₀) ≡ (a₁ , d₁) ] ∏[ b₀ ∈ B a₀ ]
-        d₀ b₀ ≡ d₁ (tra B (ap pr₀ p) b₀)
-    apply-pr₁ refl b = refl
-
-    fun-tra : {a₀ a₁ : A} {X : Ty ℓ} →
-        ∏[ p ∈ a₀ ≡ a₁ ] ∏[ f₁ ∈ (B a₁ → X) ]
-        tra (λ a → (B a → X)) p (f₁ ∘ (tra B p)) ≡ f₁
-    fun-tra refl f₁ = refl

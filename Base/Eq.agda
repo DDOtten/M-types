@@ -1,12 +1,12 @@
 {-# OPTIONS --without-K #-}
 
 
-open import M-types.Ty
-open import M-types.Sum
-open import M-types.Prod
+open import M-types.Base.Core
+open import M-types.Base.Sum
+open import M-types.Base.Prod
 
 
-module M-types.Eq where
+module M-types.Base.Eq where
     infix 4 _≡_
     data _≡_ {X : Ty ℓ} : X → X → Ty ℓ where
         refl : {x : X} → x ≡ x
@@ -73,8 +73,8 @@ module M-types.Eq where
 
 
     ≡-pair : {X : Ty ℓ₀} {Y : X → Ty ℓ₁} {w₀ w₁ : ∑ X Y} →
-        (∑[ p ∈ pr₀ w₀ ≡ pr₀ w₁ ] ((tra Y p (pr₁ w₀)) ≡ (pr₁ w₁))) → (w₀ ≡ w₁)
-    ≡-pair (refl , refl) = refl
+        (∑[ p ∈ pr₀ w₀ ≡ pr₀ w₁ ] (tra Y p (pr₁ w₀) ≡ pr₁ w₁)) → (w₀ ≡ w₁)
+    ≡-pair {ℓ₀} {ℓ₁} {X} {Y} {w} {w} (refl , refl) = refl
 
     ≡-apply : {X : Ty ℓ₀} {Y : X → Ty ℓ₁} {f₀ f₁ : ∏ X Y} →
         (f₀ ≡ f₁) → (∏[ x ∈ X ] (f₀ x ≡ f₁ x))

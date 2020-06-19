@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K #-}
 
 
-open import M-types.Ty
+open import M-types.Base.Core
 
 
-module M-types.Prod where
+module M-types.Base.Prod where
     ∏ : (X : Ty ℓ₀) → (Y : X → Ty ℓ₁) → Ty (ℓ-max ℓ₀ ℓ₁)
     ∏ X Y = (x : X) → Y x
 

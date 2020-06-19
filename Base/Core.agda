@@ -1,13 +1,14 @@
 {-# OPTIONS --without-K #-}
 
 
-module M-types.Ty where
+module M-types.Base.Core where
     open import Agda.Primitive public using (Level) renaming
         (
             lzero to ℓ-zero ;
             lsuc to ℓ-suc ;
             _⊔_ to ℓ-max
         )
+
 
     variable
         ℓ ℓ₀ ℓ₁ ℓ₂ : Level

@@ -1,10 +1,10 @@
 {-# OPTIONS --without-K #-}
 
 
-open import M-types.Ty
+open import M-types.Base.Core
 
 
-module M-types.Sum  where
+module M-types.Base.Sum  where
     infixr 4 _,_
     record ∑ (X : Ty ℓ₀) (Y : X → Ty ℓ₁) : Ty (ℓ-max ℓ₀ ℓ₁) where
         constructor _,_

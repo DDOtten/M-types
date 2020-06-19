@@ -1,14 +1,14 @@
 {-# OPTIONS --without-K #-}
 
 
-open import M-types.Ty
-open import M-types.Sum
-open import M-types.Prod
-open import M-types.Eq
-open import M-types.Equi
+open import M-types.Base.Core
+open import M-types.Base.Sum
+open import M-types.Base.Prod
+open import M-types.Base.Eq
+open import M-types.Base.Equi
 
 
-module M-types.Rel where
+module M-types.Base.Rel where
     TyRel : Ty ℓ → Ty (ℓ-suc ℓ)
     TyRel {ℓ} X = ∑[ ty ∈ Ty ℓ ] (ty → X) × (ty → X)
 
@@ -25,9 +25,9 @@ module M-types.Rel where
     TyRel-syntax ∼ x₀ x₁ = ∑[ s ∈ (ty ∼) ] ((ρ₀ ∼ s ≡ x₀) × (ρ₁ ∼ s ≡ x₁))
     syntax TyRel-syntax ∼ x₀ x₁ = x₀ ⟨ ∼ ⟩ x₁
 
-    ≡-TyRel : {X : Ty ℓ} →
+    ≡-tyRel : {X : Ty ℓ} →
         TyRel X
-    ≡-TyRel {_} {X} = (X , id , id)
+    ≡-tyRel {_} {X} = (X , id , id)
 
 
     TyRelMor : {X : Ty ℓ} →
@@ -36,6 +36,13 @@ module M-types.Rel where
         ∑[ fun ∈ (ty ∼ → ty ≈) ]
         (ρ₀ ≈ ∘ fun ≡ ρ₀ ∼) × (ρ₁ ≈ ∘ fun ≡ ρ₁ ∼)
 
+    com₀ : {X : Ty ℓ₀} {Y Z : X → Ty ℓ₁} →
+        ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Y (pr₀ s)
+    com₀ = pr₀ ∘ pr₁
+
+    com₁ : {X : Ty ℓ₀} {Y Z : X → Ty ℓ₁} →
+        ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Z (pr₀ s)
+    com₁ = pr₁ ∘ pr₁
 
     FunRel : Ty ℓ → Ty (ℓ-suc ℓ)
     FunRel {ℓ} X = X → X → Ty ℓ
@@ -45,9 +52,9 @@ module M-types.Rel where
     FunRel-syntax ∼ x₀ x₁ = ∼ x₀ x₁
     syntax FunRel-syntax ∼ x₀ x₁ = x₀ [ ∼ ] x₁
 
-    ≡-FunRel : {X : Ty ℓ} →
+    ≡-funRel : {X : Ty ℓ} →
         FunRel X
-    ≡-FunRel = λ x₀ → λ x₁ → x₀ ≡ x₁
+    ≡-funRel = λ x₀ → λ x₁ → x₀ ≡ x₁
 
 
     FunRelMor : {X : Ty ℓ} →
@@ -103,9 +110,9 @@ module M-types.Rel where
 
     FunRelMor→TyRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
         FunRelMor ∼ ≈ → TyRelMor (FunRel→TyRel ∼) (FunRel→TyRel ≈)
-    FunRelMor→TyRelMor {_} {X} {∼} {≈} mor =
+    FunRelMor→TyRelMor {_} {X} {∼} {≈} f =
         (
-            (λ (x₀ , x₁ , s) → (x₀ , x₁ , mor x₀ x₁ s)) ,
-            refl ,
+            (λ (x₀ , x₁ , s) → (x₀ , x₁ , f x₀ x₁ s)) ,
+            refl {_} {_} {pr₀}  ,
             refl
         )
