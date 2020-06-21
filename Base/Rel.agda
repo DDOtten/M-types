@@ -6,6 +6,7 @@ open import M-types.Base.Sum
 open import M-types.Base.Prod
 open import M-types.Base.Eq
 open import M-types.Base.Equi
+open import M-types.Base.Axiom
 
 
 module M-types.Base.Rel where
@@ -44,6 +45,21 @@ module M-types.Base.Rel where
         ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Z (pr₀ s)
     com₁ = pr₁ ∘ pr₁
 
+    id-tyRel : {X : Ty ℓ} {∼ : TyRel X} →
+        TyRelMor ∼ ∼
+    id-tyRel {_} {X} {∼} = (id , refl , refl)
+
+    infixr 9 _∘-tyRel_
+    _∘-tyRel_ : {X : Ty ℓ} {∼₀ ∼₁ ∼₂ : TyRel X} →
+        TyRelMor ∼₁ ∼₂ → TyRelMor ∼₀ ∼₁ → TyRelMor ∼₀ ∼₂
+    g ∘-tyRel f =
+        (
+            fun g ∘ fun f ,
+            ap (λ k → k ∘ fun f) (com₀ g) · com₀ f ,
+            ap (λ k → k ∘ fun f) (com₁ g) · com₁ f
+        )
+
+
     FunRel : Ty ℓ → Ty (ℓ-suc ℓ)
     FunRel {ℓ} X = X → X → Ty ℓ
 
@@ -62,6 +78,15 @@ module M-types.Base.Rel where
     FunRelMor {_} {X} ∼ ≈ =
         ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
         (x₀ [ ∼ ] x₁ → x₀ [ ≈ ] x₁)
+
+    id-funRel : {X : Ty ℓ} {∼ : FunRel X} →
+        FunRelMor ∼ ∼
+    id-funRel {_} {X} {∼} = λ x₀ → λ x₁ → id
+
+    infixr 9 _∘-funRel_
+    _∘-funRel_ : {X : Ty ℓ} {∼₀ ∼₁ ∼₂ : FunRel X} →
+        FunRelMor ∼₁ ∼₂ → FunRelMor ∼₀ ∼₁ → FunRelMor ∼₀ ∼₂
+    g ∘-funRel f = λ x₀ → λ x₁ → g x₀ x₁ ∘ f x₀ x₁
 
 
     TyRel→FunRel : {X : Ty ℓ} →
@@ -86,7 +111,7 @@ module M-types.Base.Rel where
     FunRel→TyRel-pres : {X : Ty ℓ} →
         ∏[ ∼ ∈ FunRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
         (x₀ ⟨ FunRel→TyRel ∼ ⟩ x₁) ≃ (x₀ [ ∼ ] x₁)
-    FunRel→TyRel-pres {_} {X} ∼ x₀ x₁ =
+    FunRel→TyRel-pres ∼ x₀ x₁ =
         (
             (λ ((y₀ , y₁ , s) , p₀ , p₁) →
                 tra (λ x → x [ ∼ ] x₁) p₀ (tra (λ y → y₀ [ ∼ ] y) p₁ s)
@@ -99,9 +124,37 @@ module M-types.Base.Rel where
         )
 
 
+    TyRel→TyRel-mor : {X : Ty ℓ} →
+        ∏[ ∼ ∈ TyRel X ] TyRelMor ∼ (FunRel→TyRel (TyRel→FunRel ∼))
+    TyRel→TyRel-mor ∼ =
+        (
+            (λ s → (ρ₀ ∼ s , ρ₁ ∼ s , s , refl , refl)) ,
+            refl ,
+            refl
+        )
+
+    FunRel→FunRel-mor : {X : Ty ℓ} →
+        ∏[ ∼ ∈ FunRel X ] FunRelMor ∼ (TyRel→FunRel (FunRel→TyRel ∼))
+    FunRel→FunRel-mor ∼ = λ x₀ → λ x₁ → λ s → ((x₀ , x₁ , s) , refl , refl)
+
+
+    TyRel-≡-mor : {X : Ty ℓ} →
+        TyRelMor {ℓ} {X} (FunRel→TyRel ≡-funRel) ≡-tyRel
+    TyRel-≡-mor =
+        (
+            (λ (x₀ , x₁ , p) → x₀) ,
+            refl ,
+            funext (λ (x₀ , x₁ , p) → p)
+        )
+
+    FunRel-≡-mor : {X : Ty ℓ} →
+        FunRelMor {ℓ} {X} (TyRel→FunRel ≡-tyRel) ≡-funRel
+    FunRel-≡-mor = λ x₀ → λ x₁ → λ(s , p₀ , p₁) → p₀ ⁻¹ · p₁
+
+
     TyRelMor→FunRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
         TyRelMor ∼ ≈ → FunRelMor (TyRel→FunRel ∼) (TyRel→FunRel ≈)
-    TyRelMor→FunRelMor {_} {X} {∼} {≈} (fun , refl , refl) x₀ x₁ (s , refl , refl) =
+    TyRelMor→FunRelMor (fun , refl , refl) x₀ x₁ (s , refl , refl) =
         (
             fun s ,
             refl ,
@@ -110,7 +163,7 @@ module M-types.Base.Rel where
 
     FunRelMor→TyRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
         FunRelMor ∼ ≈ → TyRelMor (FunRel→TyRel ∼) (FunRel→TyRel ≈)
-    FunRelMor→TyRelMor {_} {X} {∼} {≈} f =
+    FunRelMor→TyRelMor f =
         (
             (λ (x₀ , x₁ , s) → (x₀ , x₁ , f x₀ x₁ s)) ,
             refl {_} {_} {pr₀}  ,

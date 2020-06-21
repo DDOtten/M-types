@@ -117,32 +117,31 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
         (
             (λ x₀ → λ x₁ → x₀ ⟨ tyRel {X} ∼ ⟩ x₁) ,
             (λ x₀ → λ x₁ → λ {(s , refl , refl) → let
-                    q₀ :
-                        obs X x₀ ≡ (
-                            pr₀ (obs (coalg ∼) s) ,
-                            fun (ρ₀ ∼) ∘ pr₁ (obs (coalg ∼) s)
-                        )
-                    q₀ = ≡-apply (com (ρ₀ ∼)) s
+                q₀ :
+                    obs X x₀ ≡ (
+                        pr₀ (obs (coalg ∼) s) ,
+                        fun (ρ₀ ∼) ∘ pr₁ (obs (coalg ∼) s)
+                    )
+                q₀ = ≡-apply (com (ρ₀ ∼)) s
 
-                    q₁ :
-                        obs X x₁ ≡ (
-                            pr₀ (obs (coalg ∼) s) ,
-                            fun (ρ₁ ∼) ∘ pr₁ (obs (coalg ∼) s)
-                        )
-                    q₁ = ≡-apply (com (ρ₁ ∼)) s
-                in (
-                     (ap pr₀ q₀) · (ap pr₀ q₁) ⁻¹ ,
-                     λ b₀ → (
-                         pr₁ (obs (coalg ∼) s) (tra B (ap pr₀ q₀) b₀) ,
-                         (apply-pr₁ {X} q₀ b₀) ⁻¹ ,
-                         (apply-pr₁ {X} (q₁ ⁻¹) (tra B (ap pr₀ q₀) b₀)) ·
-                         ap (pr₁ (obs X x₁)) (≡-apply (
-                             tra-con B (ap pr₀ q₀) (ap pr₀ (q₁ ⁻¹)) ·
-                             ap (λ r → tra B (ap pr₀ q₀ · r)) ((ap-inv pr₀ q₁) ⁻¹)
-                         ) b₀)
-                     )
-                )
-            })
+                q₁ :
+                    obs X x₁ ≡ (
+                        pr₀ (obs (coalg ∼) s) ,
+                        fun (ρ₁ ∼) ∘ pr₁ (obs (coalg ∼) s)
+                    )
+                q₁ = ≡-apply (com (ρ₁ ∼)) s
+            in (
+                 (ap pr₀ q₀) · (ap pr₀ q₁) ⁻¹ ,
+                 λ b₀ → (
+                     pr₁ (obs (coalg ∼) s) (tra B (ap pr₀ q₀) b₀) ,
+                     (apply-pr₁ {X} q₀ b₀) ⁻¹ ,
+                     (apply-pr₁ {X} (q₁ ⁻¹) (tra B (ap pr₀ q₀) b₀)) ·
+                     ap (pr₁ (obs X x₁)) (≡-apply (
+                         tra-con B (ap pr₀ q₀) (ap pr₀ (q₁ ⁻¹)) ·
+                         ap (λ r → tra B (ap pr₀ q₀ · r)) ((ap-inv pr₀ q₁) ⁻¹)
+                     ) b₀)
+                 )
+            )})
         )
 
     FunBisim→TyBisim : {X : Coalg} →
