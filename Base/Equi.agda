@@ -20,7 +20,7 @@ module M-types.Base.Equi where
         (∑[ g ∈ (Y → X) ] ∏[ x ∈ X ] g (f x) ≡ x) ×
         (∑[ g ∈ (Y → X) ] ∏[ y ∈ Y ] f (g y) ≡ y)
 
-    infix 8 _≃_
+    infixr 8 _≃_
     _≃_ : ∏[ X ∈ Ty ℓ₀ ] ∏[ Y ∈ Ty ℓ₁ ] Ty (ℓ-max ℓ₀ ℓ₁)
     X ≃ Y = ∑[ f ∈ (X → Y) ] IsEqui f
 

@@ -128,7 +128,7 @@ module M-types.Base.Rel where
         ∏[ ∼ ∈ TyRel X ] TyRelMor ∼ (FunRel→TyRel (TyRel→FunRel ∼))
     TyRel→TyRel-mor ∼ =
         (
-            (λ s → (ρ₀ ∼ s , ρ₁ ∼ s , s , refl , refl)) ,
+            (λ s → (ρ₀ ∼ s , ρ₁ ∼ s , (s , refl , refl))) ,
             refl ,
             refl
         )
@@ -138,18 +138,18 @@ module M-types.Base.Rel where
     FunRel→FunRel-mor ∼ = λ x₀ → λ x₁ → λ s → ((x₀ , x₁ , s) , refl , refl)
 
 
-    TyRel-≡-mor : {X : Ty ℓ} →
+    ≡-TyRel→FunRel-mor : {X : Ty ℓ} →
+        FunRelMor {ℓ} {X} (TyRel→FunRel ≡-tyRel) ≡-funRel
+    ≡-TyRel→FunRel-mor = λ x₀ → λ x₁ → λ(s , p₀ , p₁) → p₀ ⁻¹ · p₁
+
+    ≡-FunRel→TyRel-mor : {X : Ty ℓ} →
         TyRelMor {ℓ} {X} (FunRel→TyRel ≡-funRel) ≡-tyRel
-    TyRel-≡-mor =
+    ≡-FunRel→TyRel-mor =
         (
             (λ (x₀ , x₁ , p) → x₀) ,
             refl ,
             funext (λ (x₀ , x₁ , p) → p)
         )
-
-    FunRel-≡-mor : {X : Ty ℓ} →
-        FunRelMor {ℓ} {X} (TyRel→FunRel ≡-tyRel) ≡-funRel
-    FunRel-≡-mor = λ x₀ → λ x₁ → λ(s , p₀ , p₁) → p₀ ⁻¹ · p₁
 
 
     TyRelMor→FunRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
