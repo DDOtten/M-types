@@ -15,13 +15,13 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
 
     coalg = pr₀
 
-    tyRel : {X : Coalg} →
-        ∏[ ∼ ∈ TyBisim X ] TyRel (ty X)
-    tyRel (coalg , ρ₀ , ρ₁) = (ty coalg , fun ρ₀ , fun ρ₁)
+    spanRel : {X : Coalg} →
+        ∏[ ∼ ∈ TyBisim X ] SpanRel (ty X)
+    spanRel (coalg , ρ₀ , ρ₁) = (ty coalg , fun ρ₀ , fun ρ₁)
 
     tyLift : {X : Coalg} →
         ∏[ ∼ ∈ TyBisim X ] ∏[ x₀ ∈ ty X ] ∏[ x₁ ∈ ty X ]
-        (x₀ ⟨ tyRel {X} ∼ ⟩ x₁ → (obs X x₀) ⟨ P-TyRel (tyRel {X} ∼) ⟩ (obs X x₁))
+        (x₀ ⟨ spanRel {X} ∼ ⟩ x₁ → (obs X x₀) ⟨ P-SpanRel (spanRel {X} ∼) ⟩ (obs X x₁))
     tyLift ∼ x₀ x₁ (s , refl , refl) =
         (
             obs (coalg ∼) s ,
@@ -51,39 +51,39 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     TyBisimMor : {X : Coalg} →
         TyBisim X → TyBisim X → Ty ℓ
     TyBisimMor {X} ∼ ≈ =
-        ∑[ mor ∈ TyRelMor (tyRel {X} ∼) (tyRel {X} ≈) ]
+        ∑[ mor ∈ SpanRelMor (spanRel {X} ∼) (spanRel {X} ≈) ]
         obs (coalg ≈) ∘ fun mor ≡ P-Fun (fun mor) ∘ obs (coalg ∼)
 
 
     FunBisim : Coalg → Ty (ℓ-suc ℓ)
     FunBisim X =
-        ∑[ funRel ∈ (ty X → ty X → Ty ℓ) ]
+        ∑[ depRel ∈ (ty X → ty X → Ty ℓ) ]
         ∏[ x₀ ∈ ty X ] ∏[ x₁ ∈ ty X ]
-        (funRel x₀ x₁ → (P-FunRel funRel) (obs X x₀) (obs X x₁))
+        (depRel x₀ x₁ → (P-DepRel depRel) (obs X x₀) (obs X x₁))
 
-    funRel : {X : Coalg} →
-        ∏[ ∼ ∈ FunBisim X ] FunRel (ty X)
-    funRel = pr₀
+    depRel : {X : Coalg} →
+        ∏[ ∼ ∈ FunBisim X ] DepRel (ty X)
+    depRel = pr₀
 
     funLift : {X : Coalg} →
         ∏[ ∼ ∈ FunBisim X ] ∏[ d₀ ∈ ty X ] ∏[ d₁ ∈ ty X ]
-        (d₀ [ funRel ∼ ] d₁ → (obs X d₀) [ P-FunRel (funRel ∼) ] (obs X d₁))
+        (d₀ [ depRel ∼ ] d₁ → (obs X d₀) [ P-DepRel (depRel ∼) ] (obs X d₁))
     funLift = pr₁
 
     ≡-funLift : {X : Coalg} →
         ∏[ x₀ ∈ ty X ] ∏[ x₁ ∈ ty X ]
-        (≡-funRel x₀ x₁ → P-FunRel ≡-funRel (obs X x₀) (obs X x₁))
+        (≡-depRel x₀ x₁ → P-DepRel ≡-depRel (obs X x₀) (obs X x₁))
     ≡-funLift x x refl = (refl , λ b → refl)
 
     ≡-funBisim : {X : Coalg} →
         FunBisim X
-    ≡-funBisim {X} = (≡-funRel , ≡-funLift)
+    ≡-funBisim {X} = (≡-depRel , ≡-funLift)
 
     P-FunBisim : {X : Coalg} →
         FunBisim X → FunBisim (P-Coalg X)
     P-FunBisim {X} ∼ =
         (
-            P-FunRel (funRel ∼) ,
+            P-DepRel (depRel ∼) ,
             λ (a₀ , d₀) → λ (a₁ , d₁) → λ (p , e) → (
                 p ,
                 λ b₀ → pr₁ ∼ (d₀ b₀) (d₁ (tra B p b₀)) (e b₀)
@@ -94,10 +94,10 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     FunBisimMor : {X : Coalg} →
         FunBisim X → FunBisim X → Ty ℓ
     FunBisimMor {X} ∼ ≈ =
-        ∑[ mor ∈ FunRelMor (funRel ∼) (funRel ≈) ]
+        ∑[ mor ∈ DepRelMor (depRel ∼) (depRel ≈) ]
         ∏[ x₀ ∈ ty X ] ∏[ x₁ ∈ ty X ]
         funLift ≈ x₀ x₁ ∘ mor x₀ x₁ ≡
-        P-FunRelMor mor (obs X x₀) (obs X x₁) ∘ funLift ∼ x₀ x₁
+        P-DepRelMor mor (obs X x₀) (obs X x₁) ∘ funLift ∼ x₀ x₁
 
 
     fun-tra : {a₀ a₁ : A} {C : Ty ℓ} →
@@ -115,7 +115,7 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
         TyBisim X → FunBisim X
     TyBisim→FunBisim {X} ∼ =
         (
-            (λ x₀ → λ x₁ → x₀ ⟨ tyRel {X} ∼ ⟩ x₁) ,
+            (λ x₀ → λ x₁ → x₀ ⟨ spanRel {X} ∼ ⟩ x₁) ,
             (λ x₀ → λ x₁ → λ {(s , refl , refl) → let
                 q₀ :
                     obs X x₀ ≡ (
@@ -149,7 +149,7 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
     FunBisim→TyBisim {X} ∼ =
         (
             (
-                (∑[ x₀ ∈ ty X ] ∑[ x₁ ∈ ty X ] x₀ [ funRel ∼ ] x₁) ,
+                (∑[ x₀ ∈ ty X ] ∑[ x₁ ∈ ty X ] x₀ [ depRel ∼ ] x₁) ,
                 λ (x₀ , x₁ , s) → (
                     pr₀ (obs X x₀) ,
                     λ b₀ → (
@@ -173,10 +173,10 @@ module M-types.Coalg.Bisim (A : Ty ℓ) (B : A → Ty ℓ) where
 
     TyBisim→FunBisim-pres : {X : Coalg} →
         ∏[ ∼ ∈ TyBisim X ] ∏[ x₀ ∈ ty X ] ∏[ x₁ ∈ ty X ]
-        (x₀ [ funRel {X} (TyBisim→FunBisim {X} ∼) ] x₁) ≡ (x₀ ⟨ tyRel {X} ∼ ⟩ x₁)
-    TyBisim→FunBisim-pres {X} ∼ x₀ x₁ = TyRel→FunRel-pres (tyRel {X} ∼) x₀ x₁
+        (x₀ [ depRel {X} (TyBisim→FunBisim {X} ∼) ] x₁) ≡ (x₀ ⟨ spanRel {X} ∼ ⟩ x₁)
+    TyBisim→FunBisim-pres {X} ∼ x₀ x₁ = SpanRel→DepRel-pres (spanRel {X} ∼) x₀ x₁
 
     FunBisim→TyBisim-pres : {X : Coalg} →
         ∏[ ∼ ∈ FunBisim X ] ∏[ x₀ ∈ ty X ] ∏[ x₁ ∈ ty X ]
-        (x₀ ⟨ tyRel {X} (FunBisim→TyBisim {X} ∼) ⟩ x₁) ≃ (x₀ [ funRel {X} ∼ ] x₁)
-    FunBisim→TyBisim-pres ∼ x₀ x₁ = FunRel→TyRel-pres (funRel ∼) x₀ x₁
+        (x₀ ⟨ spanRel {X} (FunBisim→TyBisim {X} ∼) ⟩ x₁) ≃ (x₀ [ depRel {X} ∼ ] x₁)
+    FunBisim→TyBisim-pres ∼ x₀ x₁ = DepRel→SpanRel-pres (depRel ∼) x₀ x₁

@@ -45,7 +45,7 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     IsTyBisimM : ∏[ M ∈ Coalg ] ∏[ coiter ∈ (∏[ X ∈ Coalg ] CoalgMor X M) ]
         Ty (ℓ-suc ℓ)
     IsTyBisimM M coiter =
-        ∏[ ∼ ∈ TyBisim M ] TyRelMor (tyRel {M} ∼) ≡-tyRel
+        ∏[ ∼ ∈ TyBisim M ] SpanRelMor (spanRel {M} ∼) ≡-spanRel
 
     TyBisimM : Ty (ℓ-suc ℓ)
     TyBisimM = ∑[ M ∈ Coalg ] ∑[ coiter ∈ (∏[ X ∈ Coalg ] CoalgMor X M) ]
@@ -55,7 +55,7 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     IsFunBisimM : ∏[ M ∈ Coalg ] ∏[ coiter ∈ (∏[ X ∈ Coalg ] CoalgMor X M) ]
         Ty (ℓ-suc ℓ)
     IsFunBisimM M coiter =
-        ∏[ ∼ ∈ FunBisim M ] FunRelMor (funRel {M} ∼) ≡-funRel
+        ∏[ ∼ ∈ FunBisim M ] DepRelMor (depRel {M} ∼) ≡-depRel
 
     FunBisimM : Ty (ℓ-suc ℓ)
     FunBisimM = ∑[ M ∈ Coalg ] ∑[ coiter ∈ (∏[ X ∈ Coalg ] CoalgMor X M) ]
@@ -128,26 +128,26 @@ module M-types.Coalg.M {ℓ : Level} (A : Ty ℓ) (B : A → Ty ℓ) where
     TyBisimM→FunBisimM : {M : Coalg} {coiter : ∏[ X ∈ Coalg ] CoalgMor X M} →
         IsTyBisimM M coiter → IsFunBisimM M coiter
     TyBisimM→FunBisimM {M} {coiter} isTyBisim = λ ∼ → let
-            f : FunRelMor (funRel {M} ∼) (TyRel→FunRel (FunRel→TyRel (funRel {M} ∼)))
-            f = FunRel→FunRel-mor (funRel {M} ∼)
-            g : FunRelMor (TyRel→FunRel (FunRel→TyRel (funRel {M} ∼))) (TyRel→FunRel ≡-tyRel)
-            g = TyRelMor→FunRelMor (isTyBisim (FunBisim→TyBisim {M} ∼))
-            h : FunRelMor (TyRel→FunRel ≡-tyRel) ≡-funRel
-            h = ≡-TyRel→FunRel-mor
+            f : DepRelMor (depRel {M} ∼) (SpanRel→DepRel (DepRel→SpanRel (depRel {M} ∼)))
+            f = DepRel→DepRel-mor (depRel {M} ∼)
+            g : DepRelMor (SpanRel→DepRel (DepRel→SpanRel (depRel {M} ∼))) (SpanRel→DepRel ≡-spanRel)
+            g = SpanRelMor→DepRelMor (isTyBisim (FunBisim→TyBisim {M} ∼))
+            h : DepRelMor (SpanRel→DepRel ≡-spanRel) ≡-depRel
+            h = ≡-SpanRel→DepRel-mor
         in
-            h ∘-funRel (g ∘-funRel f)
+            h ∘-depRel (g ∘-depRel f)
 
     FunBisimM→TyBisimM : {M : Coalg} {coiter : ∏[ X ∈ Coalg ] CoalgMor X M} →
         IsFunBisimM M coiter → IsTyBisimM M coiter
     FunBisimM→TyBisimM {M} {coiter} isFunBisim = λ ∼ → let
-            f : TyRelMor (tyRel {M} ∼) (FunRel→TyRel (TyRel→FunRel (tyRel {M} ∼)))
-            f = TyRel→TyRel-mor (tyRel {M} ∼)
-            g : TyRelMor (FunRel→TyRel (TyRel→FunRel (tyRel {M} ∼))) (FunRel→TyRel ≡-funRel)
-            g = FunRelMor→TyRelMor (isFunBisim (TyBisim→FunBisim {M} ∼))
-            h : TyRelMor (FunRel→TyRel ≡-funRel) ≡-tyRel
-            h = ≡-FunRel→TyRel-mor
+            f : SpanRelMor (spanRel {M} ∼) (DepRel→SpanRel (SpanRel→DepRel (spanRel {M} ∼)))
+            f = SpanRel→SpanRel-mor (spanRel {M} ∼)
+            g : SpanRelMor (DepRel→SpanRel (SpanRel→DepRel (spanRel {M} ∼))) (DepRel→SpanRel ≡-depRel)
+            g = DepRelMor→SpanRelMor (isFunBisim (TyBisim→FunBisim {M} ∼))
+            h : SpanRelMor (DepRel→SpanRel ≡-depRel) ≡-spanRel
+            h = ≡-DepRel→SpanRel-mor
         in
-            -- h ∘-tyRel (g ∘-tyRel f)
-            _∘-tyRel_ {ℓ} {ty M} {tyRel {M} ∼} {FunRel→TyRel ≡-funRel} {≡-tyRel}
+            -- h ∘-spanRel (g ∘-spanRel f)
+            _∘-spanRel_ {ℓ} {ty M} {spanRel {M} ∼} {DepRel→SpanRel ≡-depRel} {≡-spanRel}
             h
-            (_∘-tyRel_ {ℓ} {ty M} {tyRel {M} ∼} {FunRel→TyRel (TyRel→FunRel (tyRel {M} ∼))} {FunRel→TyRel ≡-funRel} g f)
+            (_∘-spanRel_ {ℓ} {ty M} {spanRel {M} ∼} {DepRel→SpanRel (SpanRel→DepRel (spanRel {M} ∼))} {DepRel→SpanRel ≡-depRel} g f)

@@ -10,8 +10,8 @@ open import M-types.Base.Axiom
 
 
 module M-types.Base.Rel where
-    TyRel : Ty ℓ → Ty (ℓ-suc ℓ)
-    TyRel {ℓ} X = ∑[ ty ∈ Ty ℓ ] (ty → X) × (ty → X)
+    SpanRel : Ty ℓ → Ty (ℓ-suc ℓ)
+    SpanRel {ℓ} X = ∑[ ty ∈ Ty ℓ ] (ty → X) × (ty → X)
 
     ρ₀ : {X : Ty ℓ₀} {Y Z : X → Ty ℓ₁} →
         ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Y (pr₀ s)
@@ -21,19 +21,19 @@ module M-types.Base.Rel where
         ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Z (pr₀ s)
     ρ₁ = pr₁ ∘ pr₁
 
-    TyRel-syntax : {X : Ty ℓ} →
-        ∏[ ∼ ∈ TyRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ] Ty ℓ
-    TyRel-syntax ∼ x₀ x₁ = ∑[ s ∈ (ty ∼) ] ((ρ₀ ∼ s ≡ x₀) × (ρ₁ ∼ s ≡ x₁))
-    syntax TyRel-syntax ∼ x₀ x₁ = x₀ ⟨ ∼ ⟩ x₁
+    SpanRel-syntax : {X : Ty ℓ} →
+        ∏[ ∼ ∈ SpanRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ] Ty ℓ
+    SpanRel-syntax ∼ x₀ x₁ = ∑[ s ∈ (ty ∼) ] ((ρ₀ ∼ s ≡ x₀) × (ρ₁ ∼ s ≡ x₁))
+    syntax SpanRel-syntax ∼ x₀ x₁ = x₀ ⟨ ∼ ⟩ x₁
 
-    ≡-tyRel : {X : Ty ℓ} →
-        TyRel X
-    ≡-tyRel {_} {X} = (X , id , id)
+    ≡-spanRel : {X : Ty ℓ} →
+        SpanRel X
+    ≡-spanRel {_} {X} = (X , id , id)
 
 
-    TyRelMor : {X : Ty ℓ} →
-        TyRel X → TyRel X → Ty ℓ
-    TyRelMor {_} {X} ∼ ≈ =
+    SpanRelMor : {X : Ty ℓ} →
+        SpanRel X → SpanRel X → Ty ℓ
+    SpanRelMor {_} {X} ∼ ≈ =
         ∑[ fun ∈ (ty ∼ → ty ≈) ]
         (ρ₀ ≈ ∘ fun ≡ ρ₀ ∼) × (ρ₁ ≈ ∘ fun ≡ ρ₁ ∼)
 
@@ -45,14 +45,14 @@ module M-types.Base.Rel where
         ∏[ s ∈ ∑[ x ∈ X ] (Y x × Z x) ] Z (pr₀ s)
     com₁ = pr₁ ∘ pr₁
 
-    id-tyRel : {X : Ty ℓ} {∼ : TyRel X} →
-        TyRelMor ∼ ∼
-    id-tyRel {_} {X} {∼} = (id , refl , refl)
+    id-spanRel : {X : Ty ℓ} {∼ : SpanRel X} →
+        SpanRelMor ∼ ∼
+    id-spanRel {_} {X} {∼} = (id , refl , refl)
 
-    infixr 9 _∘-tyRel_
-    _∘-tyRel_ : {X : Ty ℓ} {∼₀ ∼₁ ∼₂ : TyRel X} →
-        TyRelMor ∼₁ ∼₂ → TyRelMor ∼₀ ∼₁ → TyRelMor ∼₀ ∼₂
-    g ∘-tyRel f =
+    infixr 9 _∘-spanRel_
+    _∘-spanRel_ : {X : Ty ℓ} {∼₀ ∼₁ ∼₂ : SpanRel X} →
+        SpanRelMor ∼₁ ∼₂ → SpanRelMor ∼₀ ∼₁ → SpanRelMor ∼₀ ∼₂
+    g ∘-spanRel f =
         (
             fun g ∘ fun f ,
             ap (λ k → k ∘ fun f) (com₀ g) · com₀ f ,
@@ -60,42 +60,42 @@ module M-types.Base.Rel where
         )
 
 
-    FunRel : Ty ℓ → Ty (ℓ-suc ℓ)
-    FunRel {ℓ} X = X → X → Ty ℓ
+    DepRel : Ty ℓ → Ty (ℓ-suc ℓ)
+    DepRel {ℓ} X = X → X → Ty ℓ
 
-    FunRel-syntax : {X : Ty ℓ} →
-        ∏[ ∼ ∈ FunRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ] Ty ℓ
-    FunRel-syntax ∼ x₀ x₁ = ∼ x₀ x₁
-    syntax FunRel-syntax ∼ x₀ x₁ = x₀ [ ∼ ] x₁
+    DepRel-syntax : {X : Ty ℓ} →
+        ∏[ ∼ ∈ DepRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ] Ty ℓ
+    DepRel-syntax ∼ x₀ x₁ = ∼ x₀ x₁
+    syntax DepRel-syntax ∼ x₀ x₁ = x₀ [ ∼ ] x₁
 
-    ≡-funRel : {X : Ty ℓ} →
-        FunRel X
-    ≡-funRel = λ x₀ → λ x₁ → x₀ ≡ x₁
+    ≡-depRel : {X : Ty ℓ} →
+        DepRel X
+    ≡-depRel = λ x₀ → λ x₁ → x₀ ≡ x₁
 
 
-    FunRelMor : {X : Ty ℓ} →
-        FunRel X → FunRel X → Ty ℓ
-    FunRelMor {_} {X} ∼ ≈ =
+    DepRelMor : {X : Ty ℓ} →
+        DepRel X → DepRel X → Ty ℓ
+    DepRelMor {_} {X} ∼ ≈ =
         ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
         (x₀ [ ∼ ] x₁ → x₀ [ ≈ ] x₁)
 
-    id-funRel : {X : Ty ℓ} {∼ : FunRel X} →
-        FunRelMor ∼ ∼
-    id-funRel {_} {X} {∼} = λ x₀ → λ x₁ → id
+    id-depRel : {X : Ty ℓ} {∼ : DepRel X} →
+        DepRelMor ∼ ∼
+    id-depRel {_} {X} {∼} = λ x₀ → λ x₁ → id
 
-    infixr 9 _∘-funRel_
-    _∘-funRel_ : {X : Ty ℓ} {∼₀ ∼₁ ∼₂ : FunRel X} →
-        FunRelMor ∼₁ ∼₂ → FunRelMor ∼₀ ∼₁ → FunRelMor ∼₀ ∼₂
-    g ∘-funRel f = λ x₀ → λ x₁ → g x₀ x₁ ∘ f x₀ x₁
+    infixr 9 _∘-depRel_
+    _∘-depRel_ : {X : Ty ℓ} {∼₀ ∼₁ ∼₂ : DepRel X} →
+        DepRelMor ∼₁ ∼₂ → DepRelMor ∼₀ ∼₁ → DepRelMor ∼₀ ∼₂
+    g ∘-depRel f = λ x₀ → λ x₁ → g x₀ x₁ ∘ f x₀ x₁
 
 
-    TyRel→FunRel : {X : Ty ℓ} →
-        TyRel X → FunRel X
-    TyRel→FunRel {_} {X} ∼ = λ x₀ → λ x₁ → x₀ ⟨ ∼ ⟩ x₁
+    SpanRel→DepRel : {X : Ty ℓ} →
+        SpanRel X → DepRel X
+    SpanRel→DepRel {_} {X} ∼ = λ x₀ → λ x₁ → x₀ ⟨ ∼ ⟩ x₁
 
-    FunRel→TyRel : {X : Ty ℓ} →
-        FunRel X → TyRel X
-    FunRel→TyRel {_} {X} ∼ =
+    DepRel→SpanRel : {X : Ty ℓ} →
+        DepRel X → SpanRel X
+    DepRel→SpanRel {_} {X} ∼ =
         (
             (∑[ x₀ ∈ X ] ∑[ x₁ ∈ X ] x₀ [ ∼ ] x₁) ,
             pr₀ ,
@@ -103,15 +103,15 @@ module M-types.Base.Rel where
         )
 
 
-    TyRel→FunRel-pres : {X : Ty ℓ} →
-        ∏[ ∼ ∈ TyRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
-        (x₀ [ TyRel→FunRel ∼ ] x₁) ≡ (x₀ ⟨ ∼ ⟩ x₁)
-    TyRel→FunRel-pres ∼ x₀ x₁ = refl
+    SpanRel→DepRel-pres : {X : Ty ℓ} →
+        ∏[ ∼ ∈ SpanRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
+        (x₀ [ SpanRel→DepRel ∼ ] x₁) ≡ (x₀ ⟨ ∼ ⟩ x₁)
+    SpanRel→DepRel-pres ∼ x₀ x₁ = refl
 
-    FunRel→TyRel-pres : {X : Ty ℓ} →
-        ∏[ ∼ ∈ FunRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
-        (x₀ ⟨ FunRel→TyRel ∼ ⟩ x₁) ≃ (x₀ [ ∼ ] x₁)
-    FunRel→TyRel-pres ∼ x₀ x₁ =
+    DepRel→SpanRel-pres : {X : Ty ℓ} →
+        ∏[ ∼ ∈ DepRel X ] ∏[ x₀ ∈ X ] ∏[ x₁ ∈ X ]
+        (x₀ ⟨ DepRel→SpanRel ∼ ⟩ x₁) ≃ (x₀ [ ∼ ] x₁)
+    DepRel→SpanRel-pres ∼ x₀ x₁ =
         (
             (λ ((y₀ , y₁ , s) , p₀ , p₁) →
                 tra (λ x → x [ ∼ ] x₁) p₀ (tra (λ y → y₀ [ ∼ ] y) p₁ s)
@@ -124,27 +124,27 @@ module M-types.Base.Rel where
         )
 
 
-    TyRel→TyRel-mor : {X : Ty ℓ} →
-        ∏[ ∼ ∈ TyRel X ] TyRelMor ∼ (FunRel→TyRel (TyRel→FunRel ∼))
-    TyRel→TyRel-mor ∼ =
+    SpanRel→SpanRel-mor : {X : Ty ℓ} →
+        ∏[ ∼ ∈ SpanRel X ] SpanRelMor ∼ (DepRel→SpanRel (SpanRel→DepRel ∼))
+    SpanRel→SpanRel-mor ∼ =
         (
             (λ s → (ρ₀ ∼ s , ρ₁ ∼ s , (s , refl , refl))) ,
             refl ,
             refl
         )
 
-    FunRel→FunRel-mor : {X : Ty ℓ} →
-        ∏[ ∼ ∈ FunRel X ] FunRelMor ∼ (TyRel→FunRel (FunRel→TyRel ∼))
-    FunRel→FunRel-mor ∼ = λ x₀ → λ x₁ → λ s → ((x₀ , x₁ , s) , refl , refl)
+    DepRel→DepRel-mor : {X : Ty ℓ} →
+        ∏[ ∼ ∈ DepRel X ] DepRelMor ∼ (SpanRel→DepRel (DepRel→SpanRel ∼))
+    DepRel→DepRel-mor ∼ = λ x₀ → λ x₁ → λ s → ((x₀ , x₁ , s) , refl , refl)
 
 
-    ≡-TyRel→FunRel-mor : {X : Ty ℓ} →
-        FunRelMor {ℓ} {X} (TyRel→FunRel ≡-tyRel) ≡-funRel
-    ≡-TyRel→FunRel-mor = λ x₀ → λ x₁ → λ(s , p₀ , p₁) → p₀ ⁻¹ · p₁
+    ≡-SpanRel→DepRel-mor : {X : Ty ℓ} →
+        DepRelMor {ℓ} {X} (SpanRel→DepRel ≡-spanRel) ≡-depRel
+    ≡-SpanRel→DepRel-mor = λ x₀ → λ x₁ → λ(s , p₀ , p₁) → p₀ ⁻¹ · p₁
 
-    ≡-FunRel→TyRel-mor : {X : Ty ℓ} →
-        TyRelMor {ℓ} {X} (FunRel→TyRel ≡-funRel) ≡-tyRel
-    ≡-FunRel→TyRel-mor =
+    ≡-DepRel→SpanRel-mor : {X : Ty ℓ} →
+        SpanRelMor {ℓ} {X} (DepRel→SpanRel ≡-depRel) ≡-spanRel
+    ≡-DepRel→SpanRel-mor =
         (
             (λ (x₀ , x₁ , p) → x₀) ,
             refl ,
@@ -152,18 +152,18 @@ module M-types.Base.Rel where
         )
 
 
-    TyRelMor→FunRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
-        TyRelMor ∼ ≈ → FunRelMor (TyRel→FunRel ∼) (TyRel→FunRel ≈)
-    TyRelMor→FunRelMor (fun , refl , refl) x₀ x₁ (s , refl , refl) =
+    SpanRelMor→DepRelMor : {X : Ty ℓ} {∼ ≈ : SpanRel X} →
+        SpanRelMor ∼ ≈ → DepRelMor (SpanRel→DepRel ∼) (SpanRel→DepRel ≈)
+    SpanRelMor→DepRelMor (fun , refl , refl) x₀ x₁ (s , refl , refl) =
         (
             fun s ,
             refl ,
             refl
         )
 
-    FunRelMor→TyRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
-        FunRelMor ∼ ≈ → TyRelMor (FunRel→TyRel ∼) (FunRel→TyRel ≈)
-    FunRelMor→TyRelMor f =
+    DepRelMor→SpanRelMor : {X : Ty ℓ} {∼ ≈ : DepRel X} →
+        DepRelMor ∼ ≈ → SpanRelMor (DepRel→SpanRel ∼) (DepRel→SpanRel ≈)
+    DepRelMor→SpanRelMor f =
         (
             (λ (x₀ , x₁ , s) → (x₀ , x₁ , f x₀ x₁ s)) ,
             refl {_} {_} {pr₀}  ,

@@ -13,13 +13,13 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
     P-Fun f = λ (a , d) → (a , f ∘ d)
 
 
-    P-TyRel : {X : Ty ℓ} →
-        TyRel X → TyRel (P X)
-    P-TyRel {X} ∼ = (P (ty ∼) , P-Fun (ρ₀ ∼) , P-Fun (ρ₁ ∼))
+    P-SpanRel : {X : Ty ℓ} →
+        SpanRel X → SpanRel (P X)
+    P-SpanRel {X} ∼ = (P (ty ∼) , P-Fun (ρ₀ ∼) , P-Fun (ρ₁ ∼))
 
-    P-TyRelMor : {X : Ty ℓ} {∼ ≈ : TyRel X} →
-        TyRelMor ∼ ≈ → TyRelMor (P-TyRel ∼) (P-TyRel ≈)
-    P-TyRelMor {X} {∼} {≈} f =
+    P-SpanRelMor : {X : Ty ℓ} {∼ ≈ : SpanRel X} →
+        SpanRelMor ∼ ≈ → SpanRelMor (P-SpanRel ∼) (P-SpanRel ≈)
+    P-SpanRelMor {X} {∼} {≈} f =
         (
             P-Fun (fun f) ,
             ap P-Fun (com₀ f) ,
@@ -27,15 +27,15 @@ module M-types.Coalg.Core (A : Ty ℓ) (B : A → Ty ℓ) where
         )
 
 
-    P-FunRel : {X : Ty ℓ} →
-        FunRel X → FunRel (P X)
-    P-FunRel {X} ∼ = λ (a₀ , d₀) → λ (a₁ , d₁) →
+    P-DepRel : {X : Ty ℓ} →
+        DepRel X → DepRel (P X)
+    P-DepRel {X} ∼ = λ (a₀ , d₀) → λ (a₁ , d₁) →
         ∑[ p ∈ a₀ ≡ a₁ ] ∏[ b₀ ∈ B a₀ ]
         d₀ b₀ [ ∼ ] d₁ (tra B p b₀)
 
-    P-FunRelMor : {X : Ty ℓ} {∼ ≈ : FunRel X} →
-        FunRelMor ∼ ≈ → FunRelMor (P-FunRel ∼) (P-FunRel ≈)
-    P-FunRelMor {X} {∼} {≈} f = λ (a₀ , d₀) → λ (a₁ , d₁) → λ (p , e) → (
+    P-DepRelMor : {X : Ty ℓ} {∼ ≈ : DepRel X} →
+        DepRelMor ∼ ≈ → DepRelMor (P-DepRel ∼) (P-DepRel ≈)
+    P-DepRelMor {X} {∼} {≈} f = λ (a₀ , d₀) → λ (a₁ , d₁) → λ (p , e) → (
             p ,
             λ b₀ → f (d₀ b₀) (d₁ (tra B p b₀)) (e b₀)
         )
